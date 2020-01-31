@@ -1,0 +1,39 @@
+Q1) Does your program output any garbage? If yes, why?
+Ans - Yes. No garbage value but I can see that the execution of prodcons command ends in between and it displays the $ sign again which means our shell is ready to accept new input. But the two threads producer and consumer are still running. This is because the prodcons command is actually a parent thread which terminates before the child threads processing is completed as we have not used any wait mechanism. Also, we see can see the output of printf statements in both threads gets mixed up as we have not used synchronization.
+
+Q2) Are all the produced values getting consumed? Check your program for a small count like 20.
+Ans - No. All the produced values are not getting consumed. I noticed that the consumer is consuming duplicate values sometimes and then skipping the next value and jumping on the other value. This is because both threads are running simultaneously and it is possible that the consumer thread sometimex execute twice before execution of producer thread and vice versa. Although this is unwanted but not unexpected in a multithreaded environment without any synch mechanism.
+
+
+Functions Used In This Assignment :
+
+The two main functions used in this assignment are create and resume. Below is their signature.
+1) create(
+	  void		*funcaddr,	/* Address of the function	*/
+	  uint32	ssize,		/* Stack size in bytes		*/
+	  pri16		priority,	/* Process priority > 0		*/
+	  char		*name,		/* Name (for debugging)		*/
+	  uint32	nargs,		/* Number of args that follow	*/
+	  ...
+	)
+The ... actually is not meaningless. On github I found it this way but there is an argument array after that which will save the arguments given by the user. This function actually creates a new thread and executes the function in the first parameter. If the creation of the thread is successfull then it returns a pid of that thread else returns System Error.
+
+References : 
+https://github.iu.edu/SICE-OS/xinu/blob/6cd570aa35ff8e1a6406c20a9f2347246dce5c86/system/platform/x86/create.c
+
+http://www.dmi.unict.it/~pappalar/lab3/xinuman2.pdf
+
+2) resume(
+	  pid32		pid		/* ID of process to unsuspend	*/
+	)
+
+References:
+https://github.iu.edu/SICE-OS/xinu/blob/6cd570aa35ff8e1a6406c20a9f2347246dce5c86/system/resume.c
+http://www.dmi.unict.it/~pappalar/lab3/xinuman2.pdf
+
+Other functions:
+
+void consumer(int count)
+void producer(int count)
+These were empty functions in the apps folder. Which we modified later and used as the functions for our threads.
+
