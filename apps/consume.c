@@ -18,13 +18,13 @@ void consumer_bb (int count)
 	 // printf("read_buffer value in consumer %d \n", read_buffer);
 	  if ( read_buffer == -1 )
 	  {
-		  printf("\n Consuming: Queue empty \n"); 
+		 kprintf("\n Consuming: Queue empty \n"); 
 		  signal(consumed);
 		  return;
 	  }
 	  char *s = proctab[getpid()].prname;
 
-	  printf("\n name : %s, read : %d \n \n", s , buffer[read_buffer++]);
+	  kprintf("\n name : %s, read : %d \n \n", s , buffer[read_buffer++]);
 	  if ( read_buffer == write_buffer)
 	  {
 		  write_buffer = -1;
