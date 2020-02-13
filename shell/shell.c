@@ -9,6 +9,7 @@
 /************************************************************************/
 const	struct	cmdent	cmdtab[] = {
 	{"prodcons",	FALSE, 	xsh_prodcons},
+	{"run",		FALSE,	xsh_run},
 	{"hello", 	FALSE,	xsh_hello},
 	{"argecho",	TRUE,	xsh_argecho},
 	{"cat",		FALSE,	xsh_cat},
