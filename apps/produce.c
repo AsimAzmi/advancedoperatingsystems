@@ -26,7 +26,7 @@ void producer_bb(int count)
      wait(mutex);
      if ( (read_buffer == 0 && write_buffer == 4) || ( read_buffer == write_buffer + 1))
      {
-	    kprintf("Produce : Queue OverFlow \n");
+	     kprintf("Produce : Queue OverFlow \n");
 	     signal(produced);
 	     return;
      }
