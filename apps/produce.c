@@ -23,10 +23,10 @@ void producer_bb(int count)
   for ( i = 0; i < count; i++)
   {
      wait(produced);	  
-     //wait(mutex);
+     wait(mutex);
      if ( (read_buffer == 0 && write_buffer == 4) || ( read_buffer == write_buffer + 1))
      {
-	     printf("Produce : Queue OverFlow \n");
+	     kprintf("Produce : Queue OverFlow \n");
 	     signal(produced);
 	     return;
      }
@@ -43,8 +43,9 @@ void producer_bb(int count)
      buffer[write_buffer] = i;
      char *s = proctab[getpid()].prname;
 
-     printf("\n name : %s, write : %d \n", s, buffer[write_buffer++]);
+     kprintf("\n name : %s, write : %d \n", s, buffer[write_buffer++]);
      //printf("read_buffer value in producer %d \n", read_buffer);
+     signal(mutex);
      signal(consumed);
   }	  
 

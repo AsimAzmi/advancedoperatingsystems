@@ -24,7 +24,7 @@ void prodcons_bb(int nargs, char *args[]) {
   //create and initialize semaphores to necessary values
     mutex = semcreate(1);
     consumed = semcreate(0);
-    produced = semcreate(1);
+    produced = semcreate(5);
    
   //initialize read and write indices for the queue
   read_buffer = -1;
