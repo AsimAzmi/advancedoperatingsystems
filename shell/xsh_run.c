@@ -74,13 +74,13 @@ void future_test(int nargs, char *args[])
   printf("\n future_test called");
   printf("%s\n arg0", args[0] );
   printf("%s\n arg1", args[1] );
-  printf("%s\n arg2", args[2] );
-  if ( nargs == 1 && strncmp(args[1], "-pc", 3) == 0)
+ 
+  if ( nargs == 1 && strncmp(args[0], "-pc", 3) == 0)
   {
     printf("\n prodcons snippet will be called" );
     printf("%s\n", args[0]);
   }
-  else if ( nargs == 2 && strncmp(args[1], "-f", 2) == 0)
+  else if ( nargs == 2 && strncmp(args[0], "-f", 2) == 0)
   {
      printf("%s\n", args[0]);
      printf("%s\n",args[1]);
