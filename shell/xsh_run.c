@@ -102,7 +102,7 @@ shellcmd xsh_run(int nargs, char *args[])
     }
     else if(strncmp(args[0], "future_test", 11) == 0)
     {
-      printf("future_test will be called")
+      printf("future_test will be called");
       resume ( create((void *)future_test, 4096, 10, "future_test",2, nargs, args));
     }
     else
