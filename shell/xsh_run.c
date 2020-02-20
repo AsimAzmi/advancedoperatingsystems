@@ -69,14 +69,24 @@ void prodcons_bb(int nargs, char *args[]) {
 
 }
 
+void future_test(int nargs, char *args[])
+{
+  printf("\n future_test called");
+  printf("%s\n", args[0]);
+  printf("%s\n",args[1]);
+  printf("%s\n", args[2]);
+}
+
 shellcmd xsh_run(int nargs, char *args[])
 {
     if ((nargs == 1) || (strncmp(args[1], "list", 5) == 0))
     {
       printf("prodcons_bb\n");
+      printf("future_test");
       //printf("my_function_2\n");
       return OK;
     }
+
 
     /* This will go past "run" and pass the function/process name and its
     * arguments.
@@ -86,16 +96,14 @@ shellcmd xsh_run(int nargs, char *args[])
 
     if(strncmp(args[0], "prodcons_bb", 11) == 0)
     {
-      /* create a process with the function as an entry point. */
-      //resume (create((void *)my_function_1, 4096, 20, "my_func_1", 2, nargs, args));
-      /*printf("\n prodcons function will be called \n");
-      printf("\n #consume %d",atoi(args[1]));
-      printf("\n #produce %d",atoi(args[2]));
-      printf("\n #loop_consume %d", atoi(args[3]));
-      printf("\n #loop_produce %d \n", atoi(args[4]));*/
       resume ( create((void *)prodcons_bb, 4096, 10, "prodcons_bb",2, nargs, args));
       printf("\n exiting main command \n");
       return OK;
+    }
+    else if(strncmp(args[0], "future_test", 11) == 0)
+    {
+      printf("future_test will be called")
+      resume ( create((void *)future_test, 4096, 10, "prodcons_bb",2, nargs, args));
     }
     else
     {
