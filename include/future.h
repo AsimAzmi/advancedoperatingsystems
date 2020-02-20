@@ -1,4 +1,4 @@
-#ifndef _FUTURE_H_
+/*#ifndef _FUTURE_H_
 #define _FUTURE_H_
 
 typedef enum {
@@ -23,10 +23,12 @@ typedef struct future_t {
   yourtype get_queue;
 } future_t;
 
-/* Interface for the Futures system calls */
+ //Interface for the Futures system calls 
 future_t* future_alloc(future_mode_t mode, uint size, uint nelems);
 syscall future_free(future_t*);
 syscall future_get(future_t*, char*);
 syscall future_set(future_t*, char*);
 
-#endif /* _FUTURE_H_ */
+#endif  
+// _FUTURE_H_ 
+*/

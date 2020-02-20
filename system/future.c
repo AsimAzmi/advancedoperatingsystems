@@ -6,10 +6,10 @@
 
 
 // nelems i.e number of elements will always be 1 for now. Its not used
-future_t* future_alloc(future_mode_t mode, uint size, uint nelems)
+/*future_t* future_alloc(future_mode_t mode, uint size, uint nelems)
 {
 	char* future_struct_addr = (char*) getmem(size);
-	if (SYSERR == future_struct_addr)
+	if (SYSERR == *future_struct_addr)
 	{
 		printf("\n error returned by future_alloc");
 		return SYSERR;
@@ -17,7 +17,7 @@ future_t* future_alloc(future_mode_t mode, uint size, uint nelems)
 	else
 	{
 		printf("\n memory allocated by future_alloc");
-		return future_struct_addr;
+		return (future_t*)future_struct_addr;
 	}
 
 }
@@ -26,7 +26,7 @@ future_t* future_alloc(future_mode_t mode, uint size, uint nelems)
 syscall future_free(future_t* f)
 {
 	int error = 0;
-	error = freemem(f, sizeof(future_t));
+	error = freemem(char* (&f), sizeof(future_t));
 	f = NULL;
 	if (SYSERR == error)
 	{
@@ -39,4 +39,4 @@ syscall future_free(future_t* f)
 		return OK;
 	}
 		
-}
+}*/
