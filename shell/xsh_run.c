@@ -81,7 +81,7 @@ void future_test(int nargs, char *args[])
   {
      printf("%s\n", args[0]);
      printf("%s\n",args[1]);
-    printf("\n fibonachichi snippet will be called")
+    printf("\n fibonachichi snippet will be called");
   }
   else
   {
