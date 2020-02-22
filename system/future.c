@@ -14,10 +14,8 @@ future_t* future_alloc(future_mode_t mode, uint size, uint nelems)
 	if (SYSERR == future_struct_addr)
 	{
 		printf("\n error returned by future_alloc: ");
-		printfS("%s " SYSERR);
-		restore(mask);
-		return NULL;
-	}
+		//printfS("%s " SYSERR);
+		}
 	else
 	{
 		printf("\n memory allocated by future_alloc");
@@ -29,10 +27,10 @@ future_t* future_alloc(future_mode_t mode, uint size, uint nelems)
 		{
 			printf("\n Mode is future FUTURE_SHARED. Queue required queue reuired\n");
 		}
-
-		restore(mask);
-		return future_struct_addr;
 	}
+
+	restore(mask);
+	return future_struct_addr;
 
 }
 
