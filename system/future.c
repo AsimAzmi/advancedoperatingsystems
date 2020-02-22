@@ -22,7 +22,7 @@ future_t* future_alloc(future_mode_t mode, uint size, uint nelems)
 	}
 	else
 	{
-		printf("\n memory allocated by future_alloc");
+		kprintf("\n memory allocated by future_alloc");
 		if( mode == FUTURE_EXCLUSIVE)
 		{
 			kprintf("\n Mode is future FUTURE_EXCLUSIVE. No queue reuired\n");
@@ -30,7 +30,7 @@ future_t* future_alloc(future_mode_t mode, uint size, uint nelems)
 		} 
 		else if (mode == FUTURE_SHARED)
 		{
-			kprintf("\n Mode is future FUTURE_SHARED. Queue required queue reuired\n");
+			kprintf("\n Mode is future FUTURE_SHARED. Queue required\n");
 		}
 	}
 
@@ -45,6 +45,7 @@ syscall future_get(future_t* future_t, char* data)
 {
 	intmask mask;
 	mask = disable();
+	kprintf("\n future_get \n");
 
 	if ( future_t->mode == FUTURE_EXCLUSIVE)
 	{
@@ -90,9 +91,10 @@ syscall future_set(future_t* future_t, char* data)
 {
 	intmask mask;
 	mask = disable();
-
+	kprintf("\n future_set \n");
 	if ( future_t->mode == FUTURE_EXCLUSIVE)
 	{
+		kprintf("\n future_set: FUTURE_EXCLUSIVE \n");
 		if( future_t->state != FUTURE_READY)
 		{
 			kprintf("future_set: Error: Cannot set value. Future is in READY state");
@@ -100,7 +102,7 @@ syscall future_set(future_t* future_t, char* data)
 		}
 		else
 		{
-			future_t->data = data;
+			future_t->data = *data;
 			future_t->state = FUTURE_READY;
 			kprintf("future_set: Value set. State changed to READY.");
 		}
