@@ -72,16 +72,17 @@ void prodcons_bb(int nargs, char *args[]) {
 
 void future_test(int nargs, char *args[])
 {
-  printf("future_test called \n");
-  printf("arg0 %s\n ", args[0] );
-  printf("arg1 %s\n ", args[1] );
+  kprintf("future_test called \n");
+  kprintf("arg1 %s\n ", args[1] );
+  kprintf("arg2 %s\n ", args[2] );
+ 
   int one = 1;
   int two = 2;
  
   if ( nargs == 2 && strncmp(args[1], "-pc", 3) == 0)
   {
-    printf("\n prodcons snippet will be called" );
-    printf("%s\n", args[1]);
+    kprintf("\n prodcons snippet will be called" );
+    kprintf("%s\n", args[1]);
     future_t *f_exclusive, *f_shared;
     f_exclusive = future_alloc(FUTURE_EXCLUSIVE, sizeof(int), 1);
     f_shared    = future_alloc(FUTURE_SHARED, sizeof(int), 1);

@@ -2,6 +2,7 @@
 #include<xinu.h>
 #include<stdio.h>
 #include<stdlib.h>
+#include<unistd.h>
 
 
 
@@ -11,21 +12,25 @@ future_t* future_alloc(future_mode_t mode, uint size, uint nelems)
 	intmask mask;
 	mask = disable();
 	future_t *future_struct_addr = (future_t*) getmem(sizeof(future_t));
+	future_struct_addr->mode = mode;
+	future_struct_addr->state = FUTURE_EMPTY;
+
 	if (SYSERR == future_struct_addr)
 	{
-		printf("\n error returned by future_alloc: ");
+		kprintf("\n error returned by future_alloc: ");
 		//printfS("%s " SYSERR);
-		}
+	}
 	else
 	{
 		printf("\n memory allocated by future_alloc");
 		if( mode == FUTURE_EXCLUSIVE)
 		{
-			printf("\n Mode is future FUTURE_EXCLUSIVE. No queue reuired\n");
+			kprintf("\n Mode is future FUTURE_EXCLUSIVE. No queue reuired\n");
+
 		} 
 		else if (mode == FUTURE_SHARED)
 		{
-			printf("\n Mode is future FUTURE_SHARED. Queue required queue reuired\n");
+			kprintf("\n Mode is future FUTURE_SHARED. Queue required queue reuired\n");
 		}
 	}
 
@@ -34,6 +39,72 @@ future_t* future_alloc(future_mode_t mode, uint size, uint nelems)
 
 }
 
+
+
+syscall future_get(future_t* future_t, char* data)
+{
+	intmask mask;
+	mask = disable();
+
+	if ( future_t->mode == FUTURE_EXCLUSIVE)
+	{
+		if( future_t->state == FUTURE_WAITING)
+		{
+			kprintf("Error: Cannot get value. Future is in Waiting state");
+			return SYSERR;
+		}
+		else if ( future_t->state == FUTURE_EMPTY)
+		{
+			future_t->state = FUTURE_WAITING;
+			while(true)
+			{
+				if(future_t->state == FUTURE_READY)
+				{
+					*data = future_t->data;
+					future_t->state = FUTURE_EMPTY;
+					break;
+				}
+				else
+				{
+					resched();
+				}
+				sleep(100);
+			}
+		}
+		else if ( future_t->state == FUTURE_READY)
+		{
+			*data = future_t->data;
+			future_t->state = FUTURE_EMPTY;
+		}
+	}
+
+
+	restore(mask);
+	return Ok;
+}
+
+syscall future_set(future_t* future_t, char* data)
+{
+	intmask mask;
+	mask = disable();
+
+	if ( future_t->mode == FUTURE_EXCLUSIVE)
+	{
+		if( future_t->state != FUTURE_READY)
+		{
+			kprintf("future_set: Error: Cannot set value. Future is in READY state");
+			return SYSERR;
+		}
+		else
+		{
+			future_t->data = *data;
+			future_t->state = *FUTURE_READY;
+			kprintf("future_set: Value set. State changed to READY.");
+		}
+	}
+	restore(mask);
+	return Ok;
+}
 
 syscall future_free(future_t* f)
 {
@@ -47,7 +118,7 @@ syscall future_free(future_t* f)
 	}	
 		
 	f = NULL;
-	printf("\n memory freed future_free");
+	kprintf("\n memory freed future_free");
 	restore(mask);
 	return OK;
 		
