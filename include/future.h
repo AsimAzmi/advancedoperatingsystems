@@ -1,4 +1,4 @@
-/*#ifndef _FUTURE_H_
+#ifndef _FUTURE_H_
 #define _FUTURE_H_
 
 typedef enum {
@@ -31,4 +31,3 @@ syscall future_set(future_t*, char*);
 
 #endif  
 // _FUTURE_H_ 
-*/

@@ -5,7 +5,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <prodcons_bb.h>
-#include <string.h>
+#include <string.h> 
+#include <future.h>
 
 /* xsh_run - take argument to map to a function and run */
 
@@ -79,6 +80,20 @@ void future_test(int nargs, char *args[])
   {
     printf("\n prodcons snippet will be called" );
     printf("%s\n", args[1]);
+    future_t *f_exclusive, *f_shared;
+    f_exclusive = future_alloc(FUTURE_EXCLUSIVE, sizeof(int), 1);
+    f_shared    = future_alloc(FUTURE_SHARED, sizeof(int), 1);
+
+    // Test FUTURE_EXCLUSIVE
+    resume( create(future_cons, 1024, 20, "fcons1", 1, f_exclusive) );
+    resume( create(future_prod, 1024, 20, "fprod1", 2, f_exclusive, (char*) &one) );
+
+    // Test FUTURE_SHARED
+    /*resume( create(future_cons, 1024, 20, "fcons2", 1, f_shared) );
+    resume( create(future_cons, 1024, 20, "fcons3", 1, f_shared) );
+    resume( create(future_cons, 1024, 20, "fcons4", 1, f_shared) );
+    resume( create(future_cons, 1024, 20, "fcons5", 1, f_shared) );
+    resume( create(future_prod, 1024, 20, "fprod2", 2, f_shared, (char*) &two) );*/
   }
   else if ( nargs == 3 && strncmp(args[1], "-f", 2) == 0)
   {
