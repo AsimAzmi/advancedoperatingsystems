@@ -7,6 +7,7 @@
 #include <prodcons_bb.h>
 #include <string.h> 
 #include <future.h>
+#include <future_prodcons.c>
 
 /* xsh_run - take argument to map to a function and run */
 
@@ -75,6 +76,8 @@ void future_test(int nargs, char *args[])
   printf("future_test called \n");
   printf("arg0 %s\n ", args[0] );
   printf("arg1 %s\n ", args[1] );
+  int one = 1;
+  int two = 2;
  
   if ( nargs == 2 && strncmp(args[1], "-pc", 3) == 0)
   {

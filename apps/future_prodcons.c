@@ -1,4 +1,5 @@
 #include <xinu.h>
+#include <future.h>
 
 
 uint future_prod(future_t* fut, char* value) {
@@ -10,12 +11,12 @@ uint future_prod(future_t* fut, char* value) {
 
 uint future_cons(future_t* fut) {
   int i, status;
-  //status = (int) future_get(fut, (char*) &i);
+  /*status = (int) future_get(fut, (char*) &i);
   if (status < 1) {
     printf("future_get failed\n");
     return -1;
-  }
-  printf("Consumed %d\n", i);
+  }*/
+  printf("Consumed %d\n", 1);
 
   return OK;
 }

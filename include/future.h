@@ -32,5 +32,10 @@ syscall future_free(future_t*);
 syscall future_get(future_t*, char*);
 syscall future_set(future_t*, char*);
 
+
+//prodcons definition
+uint future_prod(future_t*, char*);
+uint future_cons(future_t*);
+
 #endif  
 // _FUTURE_H_ 
