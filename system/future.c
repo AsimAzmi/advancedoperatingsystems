@@ -2,7 +2,7 @@
 #include<xinu.h>
 #include<stdio.h>
 #include<stdlib.h>
-#include<unistd.h>
+//#include<unistd.h>
 
 
 
@@ -56,31 +56,34 @@ syscall future_get(future_t* future_t, char* data)
 		else if ( future_t->state == FUTURE_EMPTY)
 		{
 			future_t->state = FUTURE_WAITING;
-			while(true)
+			while(1)
 			{
 				if(future_t->state == FUTURE_READY)
 				{
 					*data = future_t->data;
 					future_t->state = FUTURE_EMPTY;
+					kprintf("future_get: Value get. State changed to EMPTY.");
+
 					break;
 				}
 				else
 				{
 					resched();
 				}
-				sleep(100);
+				//sleep(100);
 			}
 		}
 		else if ( future_t->state == FUTURE_READY)
 		{
 			*data = future_t->data;
 			future_t->state = FUTURE_EMPTY;
+			kprintf("future_get: Value get. State changed to EMPTY.");
+
 		}
 	}
 
-
 	restore(mask);
-	return Ok;
+	return 0;
 }
 
 syscall future_set(future_t* future_t, char* data)
@@ -97,13 +100,13 @@ syscall future_set(future_t* future_t, char* data)
 		}
 		else
 		{
-			future_t->data = *data;
-			future_t->state = *FUTURE_READY;
+			future_t->data = data;
+			future_t->state = FUTURE_READY;
 			kprintf("future_set: Value set. State changed to READY.");
 		}
 	}
 	restore(mask);
-	return Ok;
+	return 0;
 }
 
 syscall future_free(future_t* f)
@@ -120,6 +123,6 @@ syscall future_free(future_t* f)
 	f = NULL;
 	kprintf("\n memory freed future_free");
 	restore(mask);
-	return OK;
+	return 0;
 		
 }
