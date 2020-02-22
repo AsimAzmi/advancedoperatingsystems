@@ -7,7 +7,6 @@
 #include <prodcons_bb.h>
 #include <string.h> 
 #include <future.h>
-#include <future_prodcons.c>
 
 /* xsh_run - take argument to map to a function and run */
 
