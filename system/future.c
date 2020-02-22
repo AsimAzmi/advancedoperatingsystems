@@ -23,12 +23,12 @@ future_t* future_alloc(future_mode_t mode, uint size, uint nelems)
 	else
 	{
 		kprintf("\n memory allocated by future_alloc");
-		if( mode == FUTURE_EXCLUSIVE)
+		if( future_struct_addr->mode == FUTURE_EXCLUSIVE)
 		{
 			kprintf("\n Mode is future FUTURE_EXCLUSIVE. No queue reuired\n");
 
 		} 
-		else if (mode == FUTURE_SHARED)
+		else if (future_struct_addr->mode == FUTURE_SHARED)
 		{
 			kprintf("\n Mode is future FUTURE_SHARED. Queue required\n");
 		}

@@ -87,7 +87,8 @@ void future_test(int nargs, char *args[])
     f_exclusive = future_alloc(FUTURE_EXCLUSIVE, sizeof(int), 1);
     f_shared    = future_alloc(FUTURE_SHARED, sizeof(int), 1);
 
-    kprintf("/n Mode: %s /n",f_exclusive->mode);
+    kprintf("\n Mode f_exclusive: %s \n",f_exclusive->mode);
+    kprintf("\n Mode f_shared: %s \n",f_exclusive->mode);
 
     // Test FUTURE_EXCLUSIVE
     resume( create(future_cons, 1024, 20, "fcons1", 1, f_exclusive) );
