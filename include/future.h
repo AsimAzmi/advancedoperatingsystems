@@ -1,3 +1,6 @@
+#include<stddef.h>
+#include<xinu.h>
+
 #ifndef _FUTURE_H_
 #define _FUTURE_H_
 
@@ -19,8 +22,8 @@ typedef struct future_t {
   future_state_t state;
   future_mode_t mode;
   pid32 pid;
-  yourtype set_queue;
-  yourtype get_queue;
+  pid32 set_queue[10];
+  pid32 get_queue[10];
 } future_t;
 
  //Interface for the Futures system calls 

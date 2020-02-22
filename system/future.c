@@ -11,11 +11,12 @@ future_t* future_alloc(future_mode_t mode, uint size, uint nelems)
 	intmask mask;
 	mask = disable();
 	future_t *future_struct_addr = (future_t*) getmem(sizeof(future_t));
-	if (SYSERR == *future_struct_addr)
+	if (SYSERR == future_struct_addr)
 	{
-		printf("\n error returned by future_alloc");
+		printf("\n error returned by future_alloc: ");
+		printfS("%s " SYSERR);
 		restore(mask);
-		return SYSERR;
+		return NULL;
 	}
 	else
 	{
@@ -29,7 +30,7 @@ future_t* future_alloc(future_mode_t mode, uint size, uint nelems)
 			printf("\n Mode is future FUTURE_SHARED. Queue required queue reuired\n");
 		}
 
-		restore(mask)
+		restore(mask);
 		return future_struct_addr;
 	}
 
@@ -38,18 +39,18 @@ future_t* future_alloc(future_mode_t mode, uint size, uint nelems)
 
 syscall future_free(future_t* f)
 {
-	int error = 0;
-	error = freemem(char* (&f), sizeof(future_t));
-	f = NULL;
-	if (SYSERR == error)
+	intmask mask;
+	mask = disable();
+	
+	if(freemem((char *)f,sizeof(future_t)) == SYSERR) 
 	{
-		printf("\n Error returned by future_free");
+		f = NULL;
 		return SYSERR;
-	}
-	else
-	{
-		printf("\n memory freed future_free");
-		return OK;
-	}
+	}	
+		
+	f = NULL;
+	printf("\n memory freed future_free");
+	restore(mask);
+	return OK;
 		
 }
