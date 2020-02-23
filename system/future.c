@@ -56,6 +56,7 @@ syscall future_get(future_t* future_t, char* data)
 		}
 		else if ( future_t->state == FUTURE_EMPTY)
 		{
+			kprintf("future_get: EMPTY state");
 			future_t->state = FUTURE_WAITING;
 			while(1)
 			{
@@ -67,10 +68,10 @@ syscall future_get(future_t* future_t, char* data)
 
 					break;
 				}
-				else
+				/*else
 				{
 					resched();
-				}
+				}*/
 				//sleep(100);
 			}
 		}
