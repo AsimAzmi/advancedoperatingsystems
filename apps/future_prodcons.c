@@ -14,7 +14,6 @@ uint future_prod(future_t* fut, char* value) {
 uint future_cons(future_t* fut) {
   int i, status;
   kprintf("\n inside future_cons");
-  kprintf("\n future_cons: mode %d \n",fut->mode);
   status = (int) future_get(fut, (char*) &i);
   if (status < 1) {
     printf("future_get failed\n");

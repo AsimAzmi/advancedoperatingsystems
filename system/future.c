@@ -45,7 +45,7 @@ syscall future_get(future_t* future_t, char* data)
 {
 	intmask mask;
 	mask = disable();
-	kprintf("\n future_get \n");
+	kprintf("\ninside future_get \n");
 
 	if ( future_t->mode == FUTURE_EXCLUSIVE)
 	{
@@ -56,23 +56,19 @@ syscall future_get(future_t* future_t, char* data)
 		}
 		else if ( future_t->state == FUTURE_EMPTY)
 		{
-			kprintf("future_get: EMPTY state");
 			future_t->state = FUTURE_WAITING;
 			future_t->pid = getpid();
-			
-			/*
 			kprintf("future_get: Process suspended");
-			suspend(getpid());
+			suspend(future_t->pid);
 			kprintf("future_get: Process resumed");
-			if(future_t->state == FUTURE_READY)
-			{
-				*data = future_t->data;
-				future_t->state = FUTURE_EMPTY;
-				kprintf("future_get: Value get. State changed to EMPTY.");
-			}
-			*/
+			
+			*data = future_t->data;
+			future_t->state = FUTURE_EMPTY;
+			kprintf("future_get: Value get. State changed to EMPTY.");
+			
+			
 
-			while(1)
+			/*while(1)
 			{
 				if(future_t->state == FUTURE_READY)
 				{
@@ -82,13 +78,13 @@ syscall future_get(future_t* future_t, char* data)
 					break;
 				}
 		
-			}
+			}*/
 		}
 		else if ( future_t->state == FUTURE_READY)
 		{
 			*data = future_t->data;
 			future_t->state = FUTURE_EMPTY;
-			kprintf("future_get: Value get. State changed to EMPTY.");
+			kprintf("\n future_get: Value get. State changed to EMPTY.");
 
 		}
 	}
@@ -107,18 +103,19 @@ syscall future_set(future_t* future_t, char* data)
 		kprintf("\n future_set: FUTURE_EXCLUSIVE \n");
 		if( future_t->state == FUTURE_READY)
 		{
-			kprintf("future_set: Error: Cannot set value. Future is in READY state");
+			kprintf("\nfuture_set: Error: Cannot set value. Future is in READY state");
 			return SYSERR;
 		}
 		else
 		{
 			future_t->data = *data;
 			future_t->state = FUTURE_READY;
-			/*if ( future_t->pid != NULL)
+			if ( future_t->pid != NULL)
 			{
 				resume(future_t->pid);
-			}*/
-			kprintf("future_set: Value set. State changed to READY.");
+				kprintf("\n future_set : process resumed");
+			}
+			kprintf("\nfuture_set: Value set. State changed to READY.");
 		}
 	}
 	restore(mask);
