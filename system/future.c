@@ -245,7 +245,7 @@ void  get_queue_insert(future_t* future_struct, pid32 pid)
 	}
 }
 
-pid32 get_queue_remove(future_t*)
+pid32 get_queue_remove(future_t* future_struct)
 {
 	pid32 pid = NULL;
 	if ( future_struct->front_g + 1 == future_struct->rear_g)	
