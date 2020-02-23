@@ -86,11 +86,12 @@ syscall future_get(future_t* future_t, char* data)
 			*data = future_t->data;
 		}
 		else
-		{
+		{	
+			printf("\n future_get : FUTURE_SHARED %ld", (long)getpid());
 			future_t->pid = getpid();
 			get_queue_insert(future_t, getpid());
 			suspend(future_t->pid);
-			kprintf("future_get: process resumed %d ", future_t->pid);
+			kprintf("future_get: process resumed %ld ", (long)future_t->pid);
 			*data = future_t->data;
 		}
 
