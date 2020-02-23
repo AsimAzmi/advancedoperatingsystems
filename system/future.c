@@ -87,12 +87,14 @@ syscall future_get(future_t* future_t, char* data)
 		}
 		else
 		{	
-			printf("\n future_get : FUTURE_SHARED %ld", (long)getpid());
+			char *s = proctab[getpid()].prname;
+			printf("\n future_get : FUTURE_SHARED : getpid() %s :", s);
 			future_t->pid = getpid();
 			future_t->state = FUTURE_WAITING;
+			printf("\n future_get : FUTURE_SHARED : saved %s", (char *)proctab[future_t->pid].prname);
 			get_queue_insert(future_t, getpid());
 			suspend(future_t->pid);
-			kprintf("future_get: process resumed %ld ", (long)future_t->pid);
+			kprintf("future_get: FUTURE_SHARED : resumed %s ", (char *)proctab[future_t->pid].prname);
 			*data = future_t->data;
 		}
 
@@ -141,8 +143,10 @@ syscall future_set(future_t* future_t, char* data)
 			future_t->state = FUTURE_READY;
 			while( future_t->front_g != future_t->rear_g)
 			{
-				resume(get_queue_remove(future_t));
-				kprintf("resumed %d ", get_queue_remove(future_t));
+				pid32 pid = get_queue_remove(future_t);
+				kprintf("future_set : future_shared : dequeue : %s ", (char*)proctab[pid].prname;);
+				resume(pid);
+				
 			}
 		}
 		else
