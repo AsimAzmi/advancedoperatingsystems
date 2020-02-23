@@ -204,12 +204,12 @@ pid32 set_queue_remove( future_t* future_struct)
 	pid32 pid;
 	if ( future_struct->front_s + 1 == future_struct->rear_s)	
 	{
-		kprintf(" set_queue overflow");
+		kprintf(" set_queue underflow");
 		return SYSERR;	
 	}
 	else
 	{
-		pid = future_struct->set_queue[future_struct->front_s];
+		pid = future_struct->get_queue[future_struct->front_s];
 		
 		if ((future_struct->front_s == QUEUE_SIZE))
 		{
@@ -228,12 +228,12 @@ void  get_queue_insert(future_t* future_struct, pid32 pid)
 	
 	if ( (future_struct->front_g == 0 && future_struct->rear_g == QUEUE_SIZE) )
 	{
-		kprintf(" set_queue overflow");
+		kprintf(" get_queue overflow");
 		return SYSERR;	
 	}
 	else
 	{
-		future_struct->set_queue[future_struct->rear_g] = pid;
+		future_struct->get_queue[future_struct->rear_g] = pid;
 		
 		if ((future_struct->rear_g == QUEUE_SIZE))
 		{
@@ -252,7 +252,7 @@ pid32 get_queue_remove(future_t* future_struct)
 	pid32 pid = NULL;
 	if ( future_struct->front_g + 1 == future_struct->rear_g)	
 	{
-		kprintf(" set_queue underflow");
+		kprintf(" get_queue underflow");
 		return SYSERR;	
 	}
 	else
