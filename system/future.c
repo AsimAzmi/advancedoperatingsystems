@@ -238,7 +238,7 @@ void  get_queue_insert(future_t* future_struct, pid32 pid)
 	else
 	{
 		future_struct->get_queue[future_struct->rear_g] = pid;
-		kprintf("get_queue_insert: process inserted at %d : %s ", future_struct->rear_g , (char *)proctab[future_struct->get_queue[rear_g]].prname);
+		kprintf("get_queue_insert: process inserted at %d : %s ", future_struct->rear_g , (char *)proctab[future_struct->get_queue[future_struct->rear_g]].prname);
 		future_struct->rear_g = future_struct->rear_g + 1;				
 	}
 }
