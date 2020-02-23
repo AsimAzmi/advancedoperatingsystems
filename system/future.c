@@ -11,7 +11,7 @@ future_t* future_alloc(future_mode_t mode, uint size, uint nelems)
 {
 	intmask mask;
 	mask = disable();
-	future_t *future_struct_addr = (future_t*) getmem(sizeof(future_t));
+	future_t *future_struct_addr = (future_t *) getmem(sizeof(future_t));
 	future_struct_addr->mode = mode;
 	future_struct_addr->state = FUTURE_EMPTY;
 
@@ -25,12 +25,12 @@ future_t* future_alloc(future_mode_t mode, uint size, uint nelems)
 		kprintf("\n memory allocated by future_alloc");
 		if( future_struct_addr->mode == FUTURE_EXCLUSIVE)
 		{
-			kprintf("\n Mode is future FUTURE_EXCLUSIVE. No queue reuired\n");
+			kprintf("\n Mode is future FUTURE_EXCLUSIVE. No queue reuired. : %d \n", future_struct_addr->mode);
 
 		} 
 		else if (future_struct_addr->mode == FUTURE_SHARED)
 		{
-			kprintf("\n Mode is future FUTURE_SHARED. Queue required\n");
+			kprintf("\n Mode is future FUTURE_SHARED. Queue required %d \n", future_struct_addr->mode);
 		}
 	}
 
