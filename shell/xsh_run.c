@@ -17,6 +17,8 @@ sid32 mutex;
 sid32 consumed;
 sid32 produced;
 int buffer[5];
+int one;
+int two;
 
 
 void prodcons_bb(int nargs, char *args[]) {
@@ -75,9 +77,8 @@ void future_test(int nargs, char *args[])
   //kprintf("future_test called \n");
   //kprintf("arg1 %s\n ", args[1] );
   //kprintf("arg2 %s\n ", args[2] );
- 
-  int one = 1;
-  int two = 2;
+  one = 1;
+  two = 2;
  
   if ( nargs == 2 && strncmp(args[1], "-pc", 3) == 0)
   {

@@ -45,5 +45,8 @@ pid32 get_queue_remove(future_t*);
 uint future_prod(future_t*, char*);
 uint future_cons(future_t*);
 
+extern int one;
+extern int two;
+
 #endif  
 // _FUTURE_H_ 
