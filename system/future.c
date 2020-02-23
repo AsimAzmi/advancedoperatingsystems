@@ -238,6 +238,7 @@ void  get_queue_insert(future_t* future_struct, pid32 pid)
 	else
 	{
 		future_struct->get_queue[future_struct->rear_g] = pid;
+		kprintf("get_queue_insert: process inserted at %d : %s ", rear_g , (char *)proctab[future_struct->get_queue[rear_g]].prname);
 		future_struct->rear_g = future_struct->rear_g + 1;				
 	}
 }
@@ -252,7 +253,8 @@ pid32 get_queue_remove(future_t* future_struct)
 	}
 	else
 	{
-		pid = future_struct->set_queue[future_struct->front_g];
+		pid = future_struct->get_queue[future_struct->front_g];
+		kprintf("get_queue_remove: process removed at %d : %s ", front_g , (char *)proctab[pid].prname);
 		future_struct->front_g = future_struct->front_g + 1;
 	}
 
