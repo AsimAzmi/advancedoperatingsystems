@@ -144,7 +144,7 @@ syscall future_set(future_t* future_t, char* data)
 			while( future_t->front_g != future_t->rear_g)
 			{
 				pid32 pid = get_queue_remove(future_t);
-				kprintf("future_set : future_shared : dequeue : %s ", (char*)proctab[pid].prname;);
+				kprintf("future_set : future_shared : dequeue : %s ", (char*)proctab[pid].prname);
 				resume(pid);
 				
 			}
