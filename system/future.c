@@ -101,7 +101,7 @@ syscall future_set(future_t* future_t, char* data)
 	if ( future_t->mode == FUTURE_EXCLUSIVE)
 	{
 		kprintf("\n future_set: FUTURE_EXCLUSIVE \n");
-		if( future_t->state != FUTURE_READY)
+		if( future_t->state == FUTURE_READY)
 		{
 			kprintf("future_set: Error: Cannot set value. Future is in READY state");
 			return SYSERR;
