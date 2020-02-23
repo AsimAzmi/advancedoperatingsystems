@@ -3,7 +3,7 @@
 
 
 uint future_prod(future_t* fut, char* value) {
-  kprintf("\ninsiede future_prod");
+  kprintf("\ninside future_prod");
   int* nptr = (int*) value;
   future_set(fut, value);
   kprintf("\nfuture_prod: Produced %d\n", *nptr);
@@ -18,7 +18,7 @@ uint future_cons(future_t* fut) {
     printf("future_get failed\n");
     return -1;
   }
-  kprintf("Consumed %d\n", i);
+  kprintf("future_cons: Consumed %d\n", i);
 
   return OK;
 }

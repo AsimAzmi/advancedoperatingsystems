@@ -72,9 +72,9 @@ void prodcons_bb(int nargs, char *args[]) {
 
 void future_test(int nargs, char *args[])
 {
-  kprintf("future_test called \n");
-  kprintf("arg1 %s\n ", args[1] );
-  kprintf("arg2 %s\n ", args[2] );
+  //kprintf("future_test called \n");
+  //kprintf("arg1 %s\n ", args[1] );
+  //kprintf("arg2 %s\n ", args[2] );
  
   int one = 1;
   int two = 2;
@@ -95,11 +95,11 @@ void future_test(int nargs, char *args[])
     resume( create(future_prod, 1024, 20, "fprod1", 2, f_exclusive, (char*) &one) );
 
     // Test FUTURE_SHARED
-    /*resume( create(future_cons, 1024, 20, "fcons2", 1, f_shared) );
+    resume( create(future_cons, 1024, 20, "fcons2", 1, f_shared) );
     resume( create(future_cons, 1024, 20, "fcons3", 1, f_shared) );
     resume( create(future_cons, 1024, 20, "fcons4", 1, f_shared) );
     resume( create(future_cons, 1024, 20, "fcons5", 1, f_shared) );
-    resume( create(future_prod, 1024, 20, "fprod2", 2, f_shared, (char*) &two) );*/
+    resume( create(future_prod, 1024, 20, "fprod2", 2, f_shared, (char*) &two) );
     future_free(f_exclusive);
     future_free(f_shared);
   }

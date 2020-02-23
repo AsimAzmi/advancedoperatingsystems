@@ -31,6 +31,11 @@ future_t* future_alloc(future_mode_t mode, uint size, uint nelems)
 		else if (future_struct_addr->mode == FUTURE_SHARED)
 		{
 			kprintf("\n Mode is future FUTURE_SHARED. Queue required %d \n", future_struct_addr->mode);
+			//front_s, rear_s, front_g, rear_g;
+			future_struct_addr->front_s = 0;
+			future_struct_addr->rear_s = 0;
+			future_struct_addr->front_g = 0;
+			future_struct_addr->rear_g = 0;
 		}
 	}
 
@@ -65,20 +70,6 @@ syscall future_get(future_t* future_t, char* data)
 			*data = future_t->data;
 			future_t->state = FUTURE_EMPTY;
 			kprintf("future_get: Value get. State changed to EMPTY.");
-			
-			
-
-			/*while(1)
-			{
-				if(future_t->state == FUTURE_READY)
-				{
-					*data = future_t->data;
-					future_t->state = FUTURE_EMPTY;
-					kprintf("future_get: Value get. State changed to EMPTY.");
-					break;
-				}
-		
-			}*/
 		}
 		else if ( future_t->state == FUTURE_READY)
 		{
@@ -87,6 +78,22 @@ syscall future_get(future_t* future_t, char* data)
 			kprintf("\n future_get: Value get. State changed to EMPTY.");
 
 		}
+	}
+	else if ( future_t->mode == FUTURE_SHARED)
+	{
+		if( future_t->state == FUTURE_READY)
+		{
+			*data = future_t->data;
+		}
+		else
+		{
+			future_t->pid = getpid();
+			get_queue_insert(future_t, getpid());
+			suspend(future_t->pid);
+			kprintf("future_get: process resumed %d ", int(future_t->pid));
+			*data = future_t->data;
+		}
+
 	}
 
 	restore(mask);
@@ -118,6 +125,30 @@ syscall future_set(future_t* future_t, char* data)
 			kprintf("\nfuture_set: Value set. State changed to READY.");
 		}
 	}
+	else if (future_t->mode == FUTURE_SHARED)
+	{
+		kprintf("\n future_set: FUTURE_SHARED \n");
+		if(future_t->state == FUTURE_READY)
+		{
+			kprintf("\nfuture_set: Error: Cannot set value. Future is in READY state");
+			return SYSERR;
+		}
+		else if( future_t->state == FUTURE_WAITING)
+		{
+			future_t->data = *data;
+			future_t->state = FUTURE_READY;
+			while( future_t->front_g <= future_t->rear_g)
+			{
+				resume(get_queue_remove(future_t));
+				kprintf("resumed %d ", int(get_queue_remove(future_t)));
+			}
+		}
+		else
+		{
+			future_t->data = *data;
+			future_t->state = FUTURE_READY;
+		}
+	}
 	restore(mask);
 	return OK;
 }
@@ -138,4 +169,104 @@ syscall future_free(future_t* f)
 	restore(mask);
 	return OK;
 		
+}
+
+// Queue Implementation
+///front_s, rear_s, front_g, rear_g;
+void set_queue_insert(future_t *future_struct, pid32 pid)
+{
+	if ( (future_struct->front_s == 0 && future_struct->rear_s == QUEUESIZE))
+	{
+		kprintf(" set_queue overflow");
+		return SYSERR;	
+	}
+	else
+	{
+		future_struct->set_queue[future_struct->rear_s] = pid;
+		
+		if ((future_struct->rear_s == QUEUESIZE))
+		{
+			future_struct->rear_s = 0;
+		}
+		else
+		{
+			future_struct->rear_s += 1;
+		}
+		
+	}
+	 
+}
+
+pid32 set_queue_remove( future_t* future_struct)
+{
+	pid32 pid;
+	if ( future_struct->front_s + 1 == future_struct->rear_s)	
+	{
+		kprintf(" set_queue overflow");
+		return SYSERR;	
+	}
+	else
+	{
+		pid = future_struct->set_queue[future_struct->front_s];
+		
+		if ((future_struct->front_s == QUEUESIZE))
+		{
+			future_struct->front_s = 0;
+		}
+		else
+		{
+			future_struct->front_s += 1;
+		}
+		
+	}
+	return pid;
+}
+void  get_queue_insert(future_t* future_struct, pid32 pid)
+{
+	
+	if ( (future_struct->front_g == 0 && future_struct->rear_g == QUEUESIZE) )
+	{
+		kprintf(" set_queue overflow");
+		return SYSERR;	
+	}
+	else
+	{
+		future_struct->set_queue[future_struct->rear_g] = pid;
+		
+		if ((future_struct->rear_g == QUEUESIZE))
+		{
+			future_struct->rear_g = 0;
+		}
+		else
+		{
+			future_struct->rear_g += 1;
+		}
+		
+	}
+}
+
+pid32 get_queue_remove(future_t*)
+{
+	pid32 pid = NULL;
+	if ( future_struct->front_g + 1 == future_struct->rear_g)	
+	{
+		kprintf(" set_queue underflow");
+		return SYSERR;	
+	}
+	else
+	{
+		pid = future_struct->set_queue[future_struct->front_g];
+		
+		if ((future_struct->front_g == QUEUESIZE))
+		{
+			future_struct->front_g = 0;
+		}
+		else
+		{
+			future_struct->front_g += 1;
+		}
+		
+	}
+
+	return pid;
 }
