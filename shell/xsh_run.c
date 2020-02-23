@@ -74,22 +74,20 @@ void prodcons_bb(int nargs, char *args[]) {
 
 void future_test(int nargs, char *args[])
 {
-  //kprintf("future_test called \n");
-  //kprintf("arg1 %s\n ", args[1] );
-  //kprintf("arg2 %s\n ", args[2] );
+  
   one = 1;
   two = 2;
  
   if ( nargs == 2 && strncmp(args[1], "-pc", 3) == 0)
   {
-    kprintf("\n prodcons snippet will be called" );
-    kprintf("%s\n", args[1]);
+    kprintf("\n future_test : prodcons snippet called" );
+    
     future_t *f_exclusive, *f_shared;
     f_exclusive = future_alloc(FUTURE_EXCLUSIVE, sizeof(int), 1);
     f_shared    = future_alloc(FUTURE_SHARED, sizeof(int), 1);
 
-    kprintf("\n Mode f_exclusive: %d \n",f_exclusive->mode);
-    kprintf("\n Mode f_shared: %d \n",f_shared->mode);
+    kprintf("\n future_test :  Mode f_exclusive: %d",f_exclusive->mode);
+    kprintf("\n future_test : Mode f_shared: %d ",f_shared->mode);
 
     // Test FUTURE_EXCLUSIVE
     resume( create(future_cons, 1024, 20, "fcons1", 1, f_exclusive) );
@@ -144,7 +142,7 @@ shellcmd xsh_run(int nargs, char *args[])
     }
     else if(strncmp(args[0], "future_test", 11) == 0)
     {
-      printf("future_test will be called");
+      printf("\nfuture_test called\n");
       resume ( create((void *)future_test, 4096, 10, "future_test",2, nargs, args));
     }
     else

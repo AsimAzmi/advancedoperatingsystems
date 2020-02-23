@@ -22,15 +22,15 @@ future_t* future_alloc(future_mode_t mode, uint size, uint nelems)
 	}
 	else
 	{
-		kprintf("\n memory allocated by future_alloc");
+		kprintf("\n future_alloc:  memory allocated by future_alloc");
 		if( future_struct_addr->mode == FUTURE_EXCLUSIVE)
 		{
-			kprintf("\n Mode is future FUTURE_EXCLUSIVE. No queue reuired. : %d \n", future_struct_addr->mode);
+			kprintf("\n future_alloc: Mode is future FUTURE_EXCLUSIVE. No queue reuired. : %d \n", future_struct_addr->mode);
 
 		} 
 		else if (future_struct_addr->mode == FUTURE_SHARED)
 		{
-			kprintf("\n Mode is future FUTURE_SHARED. Queue required %d \n", future_struct_addr->mode);
+			kprintf("\n future_alloc: Mode is future FUTURE_SHARED. Queue required %d \n", future_struct_addr->mode);
 			//front_s, rear_s, front_g, rear_g;
 			future_struct_addr->front_s = 0;
 			future_struct_addr->rear_s = 0;
@@ -39,6 +39,7 @@ future_t* future_alloc(future_mode_t mode, uint size, uint nelems)
 		}
 	}
 
+	kprintf("\n");
 	restore(mask);
 	return future_struct_addr;
 
@@ -50,7 +51,7 @@ syscall future_get(future_t* future_t, char* data)
 {
 	intmask mask;
 	mask = disable();
-	kprintf("\ninside future_get \n");
+	//kprintf("\ninside future_get \n");
 
 	if ( future_t->mode == FUTURE_EXCLUSIVE)
 	{
@@ -63,19 +64,19 @@ syscall future_get(future_t* future_t, char* data)
 		{
 			future_t->state = FUTURE_WAITING;
 			future_t->pid = getpid();
-			kprintf("future_get: Process suspended");
+			//kprintf("future_get: Process suspended");
 			suspend(future_t->pid);
-			kprintf("future_get: Process resumed");
+			//kprintf("future_get: Process resumed");
 			
 			*data = future_t->data;
 			future_t->state = FUTURE_EMPTY;
-			kprintf("future_get: Value get. State changed to EMPTY.");
+			//kprintf("future_get: Value get. State changed to EMPTY.");
 		}
 		else if ( future_t->state == FUTURE_READY)
 		{
 			*data = future_t->data;
 			future_t->state = FUTURE_EMPTY;
-			kprintf("\n future_get: Value get. State changed to EMPTY.");
+			//kprintf("\n future_get: Value get. State changed to EMPTY.");
 
 		}
 	}
@@ -88,13 +89,13 @@ syscall future_get(future_t* future_t, char* data)
 		else
 		{	
 			char *s = proctab[getpid()].prname;
-			printf("\n future_get : FUTURE_SHARED : getpid() %s :", s);
+			//kprintf("\n future_get : FUTURE_SHARED : getpid() %s :", s);
 			future_t->pid = getpid();
 			future_t->state = FUTURE_WAITING;
-			printf("\n future_get : FUTURE_SHARED : saved %s", (char *)proctab[future_t->pid].prname);
+			//printf("\n future_get : FUTURE_SHARED : saved %s", (char *)proctab[future_t->pid].prname);
 			get_queue_insert(future_t, getpid());
 			suspend(future_t->pid);
-			kprintf("future_get: FUTURE_SHARED : resumed %s ", (char *)proctab[future_t->pid].prname);
+			//kprintf("future_get: FUTURE_SHARED : resumed %s ", (char *)proctab[future_t->pid].prname);
 			*data = future_t->data;
 		}
 
@@ -108,10 +109,10 @@ syscall future_set(future_t* future_t, char* data)
 {
 	intmask mask;
 	mask = disable();
-	kprintf("\n inside future_set \n");
+	//kprintf("\n inside future_set \n");
 	if ( future_t->mode == FUTURE_EXCLUSIVE)
 	{
-		kprintf("\n future_set: FUTURE_EXCLUSIVE \n");
+		//kprintf("\n future_set: FUTURE_EXCLUSIVE \n");
 		if( future_t->state == FUTURE_READY)
 		{
 			kprintf("\nfuture_set: Error: Cannot set value. Future is in READY state");
@@ -124,9 +125,9 @@ syscall future_set(future_t* future_t, char* data)
 			if ( future_t->pid != NULL)
 			{
 				resume(future_t->pid);
-				kprintf("\n future_set : process resumed");
+				//kprintf("\n future_set : process resumed");
 			}
-			kprintf("\nfuture_set: Value set. State changed to READY.");
+			//kprintf("\nfuture_set: Value set. State changed to READY.");
 		}
 	}
 	else if (future_t->mode == FUTURE_SHARED)
@@ -144,7 +145,7 @@ syscall future_set(future_t* future_t, char* data)
 			while( future_t->front_g != future_t->rear_g)
 			{
 				pid32 pid = get_queue_remove(future_t);
-				kprintf("future_set : future_shared : dequeue : %s ", (char*)proctab[pid].prname);
+				//kprintf("future_set : future_shared : dequeue : %s ", (char*)proctab[pid].prname);
 				resume(pid);
 				
 			}
@@ -238,7 +239,7 @@ void  get_queue_insert(future_t* future_struct, pid32 pid)
 	else
 	{
 		future_struct->get_queue[future_struct->rear_g] = pid;
-		kprintf("get_queue_insert: process inserted at %d : %s ", future_struct->rear_g , (char *)proctab[future_struct->get_queue[future_struct->rear_g]].prname);
+		//kprintf("get_queue_insert: process inserted at %d : %s ", future_struct->rear_g , (char *)proctab[future_struct->get_queue[future_struct->rear_g]].prname);
 		future_struct->rear_g = future_struct->rear_g + 1;				
 	}
 }
@@ -254,7 +255,7 @@ pid32 get_queue_remove(future_t* future_struct)
 	else
 	{
 		pid = future_struct->get_queue[future_struct->front_g];
-		kprintf("get_queue_remove: process removed at %d : %s ", future_struct->front_g , (char *)proctab[pid].prname);
+		//kprintf("get_queue_remove: process removed at %d : %s ", future_struct->front_g , (char *)proctab[pid].prname);
 		future_struct->front_g = future_struct->front_g + 1;
 	}
 

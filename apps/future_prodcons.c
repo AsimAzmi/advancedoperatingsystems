@@ -3,7 +3,7 @@
 
 
 uint future_prod(future_t* fut, char* value) {
-  kprintf("\ninside future_prod");
+  //kprintf("\n future_prod : called");
   int* nptr = (int*) value;
   future_set(fut, value);
   kprintf("\nfuture_prod: Produced %d\n", *nptr);
@@ -12,7 +12,7 @@ uint future_prod(future_t* fut, char* value) {
 
 uint future_cons(future_t* fut) {
   int i, status;
-  kprintf("\n inside future_cons");
+  //kprintf("\n inside future_cons");
   status = (int) future_get(fut, (char*) &i);
   if (status < 1) {
     printf("future_get failed\n");
