@@ -110,7 +110,7 @@ syscall future_set(future_t* future_t, char* data)
 		{
 			future_t->data = *data;
 			future_t->state = FUTURE_READY;
-			if ( future_t->pid != null)
+			if ( future_t->pid != NULL)
 			{
 				resume(future_t->pid);
 			}
