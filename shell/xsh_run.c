@@ -105,13 +105,13 @@ void future_test(int nargs, char *args[])
   }
   else if ( nargs == 3 && strncmp(args[1], "-f", 2) == 0)
   {
-     printf("%s\n", args[1]);
-     printf("%s\n",args[2]);
-    printf("\n fibonachichi snippet will be called");
+     kprintf("%s\n", args[1]);
+     kprintf("%s\n",args[2]);
+     kprintf("\n fibonachichi snippet will be called");
   }
   else
   {
-    printf("\n check paramters");
+    kprintf("\n check paramters");
   }
  
 

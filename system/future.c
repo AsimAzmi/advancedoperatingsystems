@@ -59,26 +59,30 @@ syscall future_get(future_t* future_t, char* data)
 			kprintf("future_get: EMPTY state");
 			future_t->state = FUTURE_WAITING;
 			future_t->pid = getpid();
+			
+			/*
+			kprintf("future_get: Process suspended");
 			suspend(getpid());
+			kprintf("future_get: Process resumed");
 			if(future_t->state == FUTURE_READY)
 			{
 				*data = future_t->data;
 				future_t->state = FUTURE_EMPTY;
 				kprintf("future_get: Value get. State changed to EMPTY.");
 			}
+			*/
 
-			/*while(1)
+			while(1)
 			{
 				if(future_t->state == FUTURE_READY)
 				{
 					*data = future_t->data;
 					future_t->state = FUTURE_EMPTY;
 					kprintf("future_get: Value get. State changed to EMPTY.");
-
 					break;
 				}
 		
-			}*/
+			}
 		}
 		else if ( future_t->state == FUTURE_READY)
 		{
@@ -110,10 +114,10 @@ syscall future_set(future_t* future_t, char* data)
 		{
 			future_t->data = *data;
 			future_t->state = FUTURE_READY;
-			if ( future_t->pid != NULL)
+			/*if ( future_t->pid != NULL)
 			{
 				resume(future_t->pid);
-			}
+			}*/
 			kprintf("future_set: Value set. State changed to READY.");
 		}
 	}
