@@ -45,8 +45,14 @@ pid32 get_queue_remove(future_t*);
 uint future_prod(future_t*, char*);
 uint future_cons(future_t*);
 
+
+//fibonacci function
+int ffib(int n);
+
+extern int zero;
 extern int one;
 extern int two;
+extern future_t **fibfut;
 
 #endif  
 // _FUTURE_H_ 

@@ -19,6 +19,8 @@ sid32 produced;
 int buffer[5];
 int one;
 int two;
+int zero;
+future_t **fibfut;
 
 
 void prodcons_bb(int nargs, char *args[]) {
@@ -104,9 +106,53 @@ void future_test(int nargs, char *args[])
   }
   else if ( nargs == 3 && strncmp(args[1], "-f", 2) == 0)
   {
-     kprintf("%s\n", args[1]);
-     kprintf("%s\n",args[2]);
-     kprintf("\n fibonachichi snippet will be called");
+     //kprintf("%s\n", args[1]);
+     //kprintf("%s\n",args[2]);
+     //kprintf("\n fibonachichi snippet will be called");
+     int fib = -1, i;
+
+    fib = atoi(args[2]);
+
+    if (fib > -1) {
+      int final_fib;
+      int future_flags = FUTURE_SHARED; // TODO - add appropriate future mode here
+       
+      // create the array of future pointers
+      if ((fibfut = (future_t **)getmem(sizeof(future_t *) * (fib + 1)))
+          == (future_t **) SYSERR) {
+        printf("getmem failed\n");
+        return(SYSERR);
+      }
+
+      // get futures for the future array
+      for (i=0; i <= fib; i++) {
+        if((fibfut[i] = future_alloc(future_flags, sizeof(int), 1)) == (future_t *) SYSERR) {
+          printf("future_alloc failed\n");
+          return(SYSERR);
+        }
+      }
+
+      // spawn fib threads and get final value
+      // TODO - you need to add your code here
+      zero = 0;
+      one = 1;
+
+      for ( i=0; i <= fib; i++ ) {
+        char buff[20];
+        kprintf(buff,"%s%d","fibelement",i);
+        resume( create(ffib, 1024, 20, buff, 1, i) );
+      }
+
+      future_get(fibfut[fib], (char*) &final_fib);
+
+      for (i=0; i <= fib; i++) {
+        future_free(fibfut[i]);
+      }
+
+      freemem((char *)fibfut, sizeof(future_t *) * (fib + 1));
+      printf("Nth Fibonacci value for N=%d is %d\n", fib, final_fib);
+      return(OK);
+    }
   }
   else
   {
