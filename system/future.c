@@ -139,7 +139,7 @@ syscall future_set(future_t* future_t, char* data)
 		{
 			future_t->data = *data;
 			future_t->state = FUTURE_READY;
-			while( future_t->front_g <= future_t->rear_g)
+			while( future_t->front_g != future_t->rear_g)
 			{
 				resume(get_queue_remove(future_t));
 				kprintf("resumed %d ", get_queue_remove(future_t));
