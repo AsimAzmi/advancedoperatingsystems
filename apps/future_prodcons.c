@@ -6,7 +6,7 @@ uint future_prod(future_t* fut, char* value) {
   //kprintf("\n future_prod : called");
   int* nptr = (int*) value;
   future_set(fut, value);
-  kprintf("\nfuture_prod: Produced %d\n", *nptr);
+  kprintf("future_prod: Produced %d\n", *nptr);
   return OK;
 }
 

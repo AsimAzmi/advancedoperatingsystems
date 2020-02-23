@@ -139,8 +139,8 @@ void future_test(int nargs, char *args[])
 
       for ( i=0; i <= fib; i++ ) {
         char buff[20];
-        kprintf(buff,"%s%d","fibelement",i);
-        resume( create(ffib, 1024, 20, buff, 1, i) );
+        //kprintf(buff,"%s%d","fibelement",i);
+        resume( create(ffib, 1024, 20, "fib", 1, i) );
       }
 
       future_get(fibfut[fib], (char*) &final_fib);
