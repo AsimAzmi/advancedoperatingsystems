@@ -160,7 +160,7 @@ void future_test(int nargs, char *args[])
   }
  
 
-  printf("\n future_test meethod thread ends.");
+  //printf("\n future_test meethod thread ends.");
 }
 
 shellcmd xsh_run(int nargs, char *args[])
