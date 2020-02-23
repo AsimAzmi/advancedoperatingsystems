@@ -90,7 +90,7 @@ syscall future_get(future_t* future_t, char* data)
 			future_t->pid = getpid();
 			get_queue_insert(future_t, getpid());
 			suspend(future_t->pid);
-			kprintf("future_get: process resumed %d ", int(future_t->pid));
+			kprintf("future_get: process resumed %d ", future_t->pid);
 			*data = future_t->data;
 		}
 
@@ -140,7 +140,7 @@ syscall future_set(future_t* future_t, char* data)
 			while( future_t->front_g <= future_t->rear_g)
 			{
 				resume(get_queue_remove(future_t));
-				kprintf("resumed %d ", int(get_queue_remove(future_t)));
+				kprintf("resumed %d ", get_queue_remove(future_t));
 			}
 		}
 		else
@@ -175,7 +175,7 @@ syscall future_free(future_t* f)
 ///front_s, rear_s, front_g, rear_g;
 void set_queue_insert(future_t *future_struct, pid32 pid)
 {
-	if ( (future_struct->front_s == 0 && future_struct->rear_s == QUEUESIZE))
+	if ( (future_struct->front_s == 0 && future_struct->rear_s == QUEUE_SIZE))
 	{
 		kprintf(" set_queue overflow");
 		return SYSERR;	
@@ -184,7 +184,7 @@ void set_queue_insert(future_t *future_struct, pid32 pid)
 	{
 		future_struct->set_queue[future_struct->rear_s] = pid;
 		
-		if ((future_struct->rear_s == QUEUESIZE))
+		if ((future_struct->rear_s == QUEUE_SIZE))
 		{
 			future_struct->rear_s = 0;
 		}
@@ -209,7 +209,7 @@ pid32 set_queue_remove( future_t* future_struct)
 	{
 		pid = future_struct->set_queue[future_struct->front_s];
 		
-		if ((future_struct->front_s == QUEUESIZE))
+		if ((future_struct->front_s == QUEUE_SIZE))
 		{
 			future_struct->front_s = 0;
 		}
@@ -224,7 +224,7 @@ pid32 set_queue_remove( future_t* future_struct)
 void  get_queue_insert(future_t* future_struct, pid32 pid)
 {
 	
-	if ( (future_struct->front_g == 0 && future_struct->rear_g == QUEUESIZE) )
+	if ( (future_struct->front_g == 0 && future_struct->rear_g == QUEUE_SIZE) )
 	{
 		kprintf(" set_queue overflow");
 		return SYSERR;	
@@ -233,7 +233,7 @@ void  get_queue_insert(future_t* future_struct, pid32 pid)
 	{
 		future_struct->set_queue[future_struct->rear_g] = pid;
 		
-		if ((future_struct->rear_g == QUEUESIZE))
+		if ((future_struct->rear_g == QUEUE_SIZE))
 		{
 			future_struct->rear_g = 0;
 		}
@@ -257,7 +257,7 @@ pid32 get_queue_remove(future_t*)
 	{
 		pid = future_struct->set_queue[future_struct->front_g];
 		
-		if ((future_struct->front_g == QUEUESIZE))
+		if ((future_struct->front_g == QUEUE_SIZE))
 		{
 			future_struct->front_g = 0;
 		}
