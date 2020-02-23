@@ -17,20 +17,20 @@ future_t* future_alloc(future_mode_t mode, uint size, uint nelems)
 
 	if (SYSERR == future_struct_addr)
 	{
-		kprintf("\n error returned by future_alloc: ");
+		//kprintf("\n error returned by future_alloc: ");
 		//printfS("%s " SYSERR);
 	}
 	else
 	{
-		kprintf("\n future_alloc:  memory allocated by future_alloc");
+		//kprintf("\n future_alloc:  memory allocated by future_alloc");
 		if( future_struct_addr->mode == FUTURE_EXCLUSIVE)
 		{
-			kprintf("\n future_alloc: Mode is future FUTURE_EXCLUSIVE. No queue reuired. : %d \n", future_struct_addr->mode);
+			//kprintf("\n future_alloc: Mode is future FUTURE_EXCLUSIVE. No queue reuired. : %d \n", future_struct_addr->mode);
 
 		} 
 		else if (future_struct_addr->mode == FUTURE_SHARED)
 		{
-			kprintf("\n future_alloc: Mode is future FUTURE_SHARED. Queue required %d \n", future_struct_addr->mode);
+			//kprintf("\n future_alloc: Mode is future FUTURE_SHARED. Queue required %d \n", future_struct_addr->mode);
 			//front_s, rear_s, front_g, rear_g;
 			future_struct_addr->front_s = 0;
 			future_struct_addr->rear_s = 0;
@@ -115,7 +115,7 @@ syscall future_set(future_t* future_t, char* data)
 		//kprintf("\n future_set: FUTURE_EXCLUSIVE \n");
 		if( future_t->state == FUTURE_READY)
 		{
-			kprintf("\nfuture_set: Error: Cannot set value. Future is in READY state");
+			//kprintf("\nfuture_set: Error: Cannot set value. Future is in READY state");
 			return SYSERR;
 		}
 		else
@@ -132,10 +132,10 @@ syscall future_set(future_t* future_t, char* data)
 	}
 	else if (future_t->mode == FUTURE_SHARED)
 	{
-		kprintf("\n future_set: FUTURE_SHARED \n");
+		//kprintf("\n future_set: FUTURE_SHARED \n");
 		if(future_t->state == FUTURE_READY)
 		{
-			kprintf("\nfuture_set: Error: Cannot set value. Future is in READY state");
+			//kprintf("\nfuture_set: Error: Cannot set value. Future is in READY state");
 			return SYSERR;
 		}
 		else if( future_t->state == FUTURE_WAITING)
@@ -172,7 +172,7 @@ syscall future_free(future_t* f)
 	}	
 		
 	f = NULL;
-	kprintf("\n memory freed future_free");
+	//kprintf("\n memory freed future_free");
 	restore(mask);
 	return OK;
 		
