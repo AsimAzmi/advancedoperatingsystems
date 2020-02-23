@@ -90,14 +90,14 @@ syscall future_get(future_t* future_t, char* data)
 	}
 
 	restore(mask);
-	return 0;
+	return OK;
 }
 
 syscall future_set(future_t* future_t, char* data)
 {
 	intmask mask;
 	mask = disable();
-	kprintf("\n future_set \n");
+	kprintf("\n inside future_set \n");
 	if ( future_t->mode == FUTURE_EXCLUSIVE)
 	{
 		kprintf("\n future_set: FUTURE_EXCLUSIVE \n");
@@ -119,7 +119,7 @@ syscall future_set(future_t* future_t, char* data)
 		}
 	}
 	restore(mask);
-	return 0;
+	return OK;
 }
 
 syscall future_free(future_t* f)
@@ -136,6 +136,6 @@ syscall future_free(future_t* f)
 	f = NULL;
 	kprintf("\n memory freed future_free");
 	restore(mask);
-	return 0;
+	return OK;
 		
 }

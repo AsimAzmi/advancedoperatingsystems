@@ -5,7 +5,6 @@
 uint future_prod(future_t* fut, char* value) {
   kprintf("\ninsiede future_prod");
   int* nptr = (int*) value;
-  kprintf("\n future_prod: mode  %s",fut->mode);
   future_set(fut, value);
   kprintf("\nfuture_prod: Produced %d\n", *nptr);
   return OK;
