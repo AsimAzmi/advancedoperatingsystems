@@ -89,7 +89,7 @@ syscall future_get(future_t* future_t, char* data)
 		{	
 			printf("\n future_get : FUTURE_SHARED %ld", (long)getpid());
 			future_t->pid = getpid();
-			future_t0>state = FUTURE_WAITING;
+			future_t->state = FUTURE_WAITING;
 			get_queue_insert(future_t, getpid());
 			suspend(future_t->pid);
 			kprintf("future_get: process resumed %ld ", (long)future_t->pid);
