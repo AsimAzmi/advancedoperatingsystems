@@ -1,0 +1,18 @@
+I have used FUTURE_SHARED mode for fibonacci.
+
+The working of FUTURE_EXCLUSIVE mode is not suitable for this program.
+In FUTURE_EXCLUSIVE as soon as a consumer has read from future the state of the future is changed to FUTURE_EMPTY.
+So the next consumer cannot access the future data until it is written by the producer again and the state is change to FUTURE_READY again.
+
+Now in case of Fibonacci, every time a consumer has to read previous two produced values and this can cause problem of indefinite waiting in case of fibonacci if we use FUTURE_EXCLUSIVE. 
+
+For eg.
+Consider 4 futures Fibonacci0, Fibonacci1, Fibonacci2, Fibonacci3.
+
+Fibonacci2 will have to read Fibonacci1 & Fibonacci0. 
+Fibonacci3 will have to read Fibonacci2 & Fibonacci1.
+
+Now if we have had used FUTURE_EXCLUSIVE then future Fibonacci1's state would have been changed by Fibonacci2 future to FUTURE_EMPTY.
+So, when Fibonacci 3 future tries to read Fibonacci1 our program will fail.
+
+Hence, We have used FUTURE_SHARED because once the data is written with this mode. It is always in FUTURE_READY state and any number of consumers can consume this data.
