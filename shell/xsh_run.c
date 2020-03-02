@@ -168,8 +168,8 @@ shellcmd xsh_run(int nargs, char *args[])
     if ((nargs == 1) || (strncmp(args[1], "list", 5) == 0))
     {
       printf("prodcons_bb\n");
-      printf("future_test");
-      //printf("my_function_2\n");
+      printf("future_test\n");
+      printf("tscdf\n");
       return OK;
     }
 
@@ -179,6 +179,8 @@ shellcmd xsh_run(int nargs, char *args[])
     */
     args++;
     nargs--;
+
+    
 
     if(strncmp(args[0], "prodcons_bb", 11) == 0)
     {
@@ -190,6 +192,11 @@ shellcmd xsh_run(int nargs, char *args[])
     {
       //printf("\nfuture_test called\n");
       resume ( create((void *)future_test, 4096, 10, "future_test",2, nargs, args));
+    }
+    else if (strncmp(args[0], "tscdf", 5) == 0)
+    {
+      printf(" tscdf command called \n" );
+      resume ( create((void *)tscdf, 4096, 10, "tscdf",2, nargs, args));
     }
     else
     {
