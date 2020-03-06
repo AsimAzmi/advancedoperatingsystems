@@ -7,6 +7,7 @@
 #include <prodcons_bb.h>
 #include <string.h> 
 #include <future.h>
+#include <tscdf.h>
 
 /* xsh_run - take argument to map to a function and run */
 
@@ -138,7 +139,7 @@ void future_test(int nargs, char *args[])
       one = 1;
 
       for ( i=0; i <= fib; i++ ) {
-        char buff[20];
+        //char buff[20];
         //kprintf(buff,"%s%d","fibelement",i);
         resume( create(ffib, 1024, 20, "fib", 1, i) );
       }
@@ -158,9 +159,14 @@ void future_test(int nargs, char *args[])
   {
     kprintf("\n check paramters");
   }
- 
 
   //printf("\n future_test meethod thread ends.");
+}
+
+
+void tscdf(int nargs, char *args[])
+{
+    resume ( create((void *)stream_proc, 4096, 10, "tscdf",2, nargs, args));
 }
 
 shellcmd xsh_run(int nargs, char *args[])
