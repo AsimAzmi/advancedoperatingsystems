@@ -1,7 +1,10 @@
-#include <tscdf.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <tscdf_input.h>
+//#include <tscdf.h>
+//#include <stdlib.h>
+//#include <stdio.h>
+#include <tscdf_a5.h>
+#include "tscdf.h"
+//#include "tscdf_input.h"
+
 
 
 int work_queue_depth;
@@ -14,25 +17,59 @@ uint pcport;
 
 void stream_consumer(int32 id, struct stream *str)
 {			
-	kprintf("%d Consumer Create \n", id);
+	//kprintf("%d Consumer Create \n", id);
+	struct tscdf *tscdf_pointer  = tscdf_init(time_window);
+	int count = 0;
 	
+	kprintf("stream_consumer id:%d (pid:%d) \n",id,getpid());
+
 	while(1)
 	{
+		count++;
 		wait(str->items);
 		wait(str->mutex);
 		
 		str->head = (str->head+1) % work_queue_depth;
-		kprintf("stream_consumer id:%d (pid:%d)  time:%d value:%d \n",id,id, str->queue[str->head].time, str->queue[str->head].value);
+		//kprintf("stream_consumer id:%d (pid:%d)  time:%d value:%d \n",id,getpid(), str->queue[str->head].time, str->queue[str->head].value);
 		
+		
+
+	
+
 		signal(str->mutex);
-		signal(str->spaces);	
+		signal(str->spaces);
+
+		// quartile code
+		tscdf_update(tscdf_pointer, str->queue[str->head].time, str->queue[str->head].value);
+
+		
+
+		if(count == output_time)	
+		{
+			count = 0;
+			char output[30];
+			int32 *qarray;
+			qarray = tscdf_quartiles(tscdf_pointer);
+
+    		if(qarray == NULL) {
+		    		  kprintf("tscdf_quartiles returned NULL\n");
+		    		  continue;
+		    		}
+		
+    		sprintf(output, "s%d: %d %d %d %d %d", id, qarray[0], qarray[1], qarray[2], qarray[3], qarray[4]);
+    		kprintf("%s\n", output);
+    		freemem((char *)qarray, (6*sizeof(int32)));
+		}
+		// quartile code ends		
 
 		if (str->queue[str->head].time == 0 && str->queue[str->head].value == 0)
 		{
-			kprintf("\n %d consumer exits", id);
+			kprintf("%d consumer exits \n", id);
 			ptsend(pcport, getpid());
 			break;
 		}
+
+
 	}	
 
 	return;
@@ -56,9 +93,10 @@ int stream_proc(int nargs, char* args[])
 
 
   int i = sizeof(args) / sizeof(char*);
-  printf("%d\n ", i);
+  //printf("%d\n ", i);
   char c;
   char *ch;
+  ///int i = 
   //ulong secs, msecs, time;
   //secs = clktime;
   //msecs = clkticks;
@@ -116,12 +154,12 @@ int stream_proc(int nargs, char* args[])
       printf("ptcreate failed\n");
       return(-1);
  	 }
-  	printf("\n %d port \n", pcport);
+  	//printf("\n %d port \n", pcport);
 	 // ports	
 
 
    //create an array of streams.
-   kprintf("creating an array of streams\n");
+   //kprintf("creating an array of streams\n");
    struct stream streams[num_streams];	
 
   
@@ -162,9 +200,9 @@ int stream_proc(int nargs, char* args[])
  
    
 
-    kprintf("size %d \n", sizeof(stream_input)/sizeof(stream_input[0]));
+    //kprintf("size %d \n", sizeof(stream_input)/sizeof(stream_input[0]));
      // Parse input header file data and populate work queue
-    for ( i = 0; i < sizeof(stream_input)/sizeof(stream_input[0]); i++)
+    for ( i = 0; i < n_input; i++)
     {
     	int ts, v;
 		char *a = (char *)stream_input[i];
@@ -191,7 +229,7 @@ int stream_proc(int nargs, char* args[])
     	streams[st].tail = ((streams[st].tail + 1 ) % work_queue_depth);
     	streams[st].queue[streams[st].tail].time = ts;
     	streams[st].queue[streams[st].tail].value = v;
-    	kprintf("Producer id: %d time: %d value: %d \n", st, streams[st].queue[streams[st].tail].time, streams[st].queue[streams[st].tail].value );	
+    	//kprintf("Producer id: %d time: %d value: %d \n", st, streams[st].queue[streams[st].tail].time, streams[st].queue[streams[st].tail].value );	
     	//kprintf(" Producer \n ");	
 	    signal(streams[st].mutex);
     	signal(streams[st].items);
@@ -213,7 +251,7 @@ int stream_proc(int nargs, char* args[])
     // ports and time
     for(i=0; i < num_streams; i++) {
       uint32 pm;
-      kprintf("\n port listenin started ...............................");
+      //kprintf("\n port listenin started ...............................");
       pm = ptrecv(pcport);
       kprintf("process %d exited\n", pm);
   	}

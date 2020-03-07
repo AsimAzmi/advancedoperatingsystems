@@ -7,7 +7,7 @@
 #include <prodcons_bb.h>
 #include <string.h> 
 #include <future.h>
-#include <tscdf.h>
+#include <tscdf_a5.h>
 
 /* xsh_run - take argument to map to a function and run */
 
@@ -201,7 +201,7 @@ shellcmd xsh_run(int nargs, char *args[])
     }
     else if (strncmp(args[0], "tscdf", 5) == 0)
     {
-      printf(" tscdf command called \n" );
+      //printf(" tscdf command called \n" );
       resume ( create((void *)tscdf, 4096, 10, "tscdf",2, nargs, args));
     }
     else
