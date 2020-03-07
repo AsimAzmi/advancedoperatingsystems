@@ -20,16 +20,22 @@ void stream_consumer(int32 id, struct stream *str)
 	{
 		wait(str->items);
 		wait(str->mutex);
-		kprintf("stream_consumer id:%d (pid:%d)  time:%d value:%d \n",id,id, str->queue[str->head].time, str->queue[str->head].value);
-		if (str->queue[str->head].time == 0 && str->queue[str->head].value == 0)
-		{
-			ptsend(pcport, getpid());
-			kill(getpid());
-		}
+		
 		str->head = (str->head+1) % work_queue_depth;
+		kprintf("stream_consumer id:%d (pid:%d)  time:%d value:%d \n",id,id, str->queue[str->head].time, str->queue[str->head].value);
+		
 		signal(str->mutex);
 		signal(str->spaces);	
+
+		if (str->queue[str->head].time == 0 && str->queue[str->head].value == 0)
+		{
+			kprintf("\n %d consumer exits", id);
+			ptsend(pcport, getpid());
+			break;
+		}
 	}	
+
+	return;
 				
 }
 
@@ -46,11 +52,7 @@ int stream_proc(int nargs, char* args[])
   secs = clktime;
   msecs = clkticks;
 
-  if((pcport = ptcreate(num_streams)) == SYSERR) {
-      printf("ptcreate failed\n");
-      return(-1);
-  }
- // ports	
+
 
 
   int i = sizeof(args) / sizeof(char*);
@@ -108,6 +110,16 @@ int stream_proc(int nargs, char* args[])
    }
   // Parse arguments
 
+
+   //ports
+    if((pcport = ptcreate(num_streams)) == SYSERR) {
+      printf("ptcreate failed\n");
+      return(-1);
+ 	 }
+  	printf("\n %d port \n", pcport);
+	 // ports	
+
+
    //create an array of streams.
    kprintf("creating an array of streams\n");
    struct stream streams[num_streams];	
@@ -126,8 +138,8 @@ int stream_proc(int nargs, char* args[])
    		streams[i].mutex = semcreate(1);
    		streams[i].spaces = semcreate(work_queue_depth);
    		streams[i].items = semcreate(0);
-   		streams[i].head = 0;
-   		streams[i].tail = 0;
+   		streams[i].head = -1;
+   		streams[i].tail = -1;
 
    		/*struct data_element data[work_queue_depth];
    		streams[i].queue = data;*/
@@ -176,11 +188,10 @@ int stream_proc(int nargs, char* args[])
     	
     	wait(streams[st].spaces);
     	wait(streams[st].mutex);
+    	streams[st].tail = ((streams[st].tail + 1 ) % work_queue_depth);
     	streams[st].queue[streams[st].tail].time = ts;
     	streams[st].queue[streams[st].tail].value = v;
-    	kprintf("Producer id: %d time: %d value: %d \n", st, streams[st].queue[streams[st].tail].time, streams[st].queue[streams[st].tail].value );
-
-    	streams[st].tail = ((streams[st].tail + 1 ) % work_queue_depth);
+    	kprintf("Producer id: %d time: %d value: %d \n", st, streams[st].queue[streams[st].tail].time, streams[st].queue[streams[st].tail].value );	
     	//kprintf(" Producer \n ");	
 	    signal(streams[st].mutex);
     	signal(streams[st].items);
@@ -202,8 +213,9 @@ int stream_proc(int nargs, char* args[])
     // ports and time
     for(i=0; i < num_streams; i++) {
       uint32 pm;
+      kprintf("\n port listenin started ...............................");
       pm = ptrecv(pcport);
-      printf("process %d exited\n", pm);
+      kprintf("process %d exited\n", pm);
   	}
 
   	ptdelete(pcport, 0);
