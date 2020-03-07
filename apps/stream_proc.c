@@ -64,7 +64,9 @@ void stream_consumer(int32 id, struct stream *str)
 
 		if (str->queue[str->head].time == 0 && str->queue[str->head].value == 0)
 		{
-			kprintf("%d consumer exits \n", id);
+			//kprintf("%d consumer exits \n", id);
+			
+			kprintf("stream_consumer exiting \n");
 			ptsend(pcport, getpid());
 			break;
 		}
