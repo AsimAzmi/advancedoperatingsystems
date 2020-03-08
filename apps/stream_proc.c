@@ -68,6 +68,16 @@ void stream_consumer(int32 id, struct stream *str)
 			
 			kprintf("stream_consumer exiting \n");
 			ptsend(pcport, getpid());
+			if((freemem((char *)str->queue,sizeof(sizeof(de) * (work_queue_depth ))) == SYSERR) || (tscdf_free(tscdf_pointer)== SYSERR)) 
+			{
+					str->queue = NULL;
+					tscdf_pointer = NULL;
+					return SYSERR;
+			}
+			str->queue = NULL;
+			tscdf_pointer = NULL;	
+
+
 			break;
 		}
 
