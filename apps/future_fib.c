@@ -30,8 +30,10 @@ int ffib(int n) {
     return -1;
   }
 
+  kprintf("\n minus2 %d : minus1 %d \n", minus2 , minus1);
   this = minus1 + minus2;
-
+  //kprintf("\n %d \n" , n);
+  kprintf("\n value %d \n", this);
   future_set(fibfut[n], (char*) &this);
 
   return(0);

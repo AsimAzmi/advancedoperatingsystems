@@ -23,6 +23,10 @@ int two;
 int zero;
 future_t **fibfut;
 
+//futureq_test1 (int nargs, char *args[]);
+//futureq_test2 (int nargs, char *args[]);
+//futureq_test3 (int nargs, char *args[]);
+
 
 void prodcons_bb(int nargs, char *args[]) {
   
@@ -75,12 +79,78 @@ void prodcons_bb(int nargs, char *args[]) {
 
 }
 
+void futureq_test1 (int nargs, char *args[]) {
+    int three = 3, four = 4, five = 5, six = 6;
+    future_t *f_queue;
+    f_queue = future_alloc(FUTURE_QUEUE, sizeof(int), 3);
+
+    printf(" tail %d\n", f_queue->tail);
+    printf(" head %d\n", f_queue->head);
+
+    /*
+    future_prod(f_queue, (char *)&three);
+    future_prod(f_queue, (char *)&four);
+    future_prod(f_queue, (char *)&five);
+    future_cons(f_queue);
+    future_prod(f_queue, (char *)&six);
+    future_cons(f_queue);
+    future_cons(f_queue);
+    future_cons(f_queue);
+    */
+    resume(create(future_cons, 1024, 20, "fcons6", 1, f_queue));
+    resume(create(future_cons, 1024, 20, "fcons7", 1, f_queue));
+    resume(create(future_cons, 1024, 20, "fcons8", 1, f_queue));
+    resume(create(future_cons, 1024, 20, "fcons9", 1, f_queue));
+    resume(create(future_prod, 1024, 20, "fprod3", 2, f_queue, (char *)&three));
+    resume(create(future_prod, 1024, 20, "fprod4", 2, f_queue, (char *)&four));
+    resume(create(future_prod, 1024, 20, "fprod5", 2, f_queue, (char *)&five));
+    resume(create(future_prod, 1024, 20, "fprod6", 2, f_queue, (char *)&six));
+}
+
+void futureq_test2 (int nargs, char *args[]) {
+    kprintf("\n fq2 called \n");
+    int seven = 7, eight = 8, nine=9, ten = 10, eleven = 11;
+    future_t *f_queue;
+    f_queue = future_alloc(FUTURE_QUEUE, sizeof(int), 3);
+
+    resume(create(future_prod, 1024, 20, "fprod10", 2, f_queue, (char *)&seven));
+    resume(create(future_prod, 1024, 20, "fprod11", 2, f_queue, (char *)&eight));
+    resume(create(future_prod, 1024, 20, "fprod12", 2, f_queue, (char *)&nine));
+    resume(create(future_prod, 1024, 20, "fprod13", 2, f_queue, (char *)&ten));
+    resume(create(future_prod, 1024, 20, "fprod13", 2, f_queue, (char *)&eleven));
+
+    resume(create(future_cons, 1024, 20, "fcons14", 1, f_queue));
+    resume(create(future_cons, 1024, 20, "fcons15", 1, f_queue));
+    resume(create(future_cons, 1024, 20, "fcons16", 1, f_queue));
+    resume(create(future_cons, 1024, 20, "fcons17", 1, f_queue));
+    resume(create(future_cons, 1024, 20, "fcons18", 1, f_queue));
+}
+
+void futureq_test3 (int nargs, char *args[]) {
+    kprintf("\n fq3 called \n");
+    int three = 3, four = 4, five = 5, six = 6;
+    future_t *f_queue;
+    f_queue = future_alloc(FUTURE_QUEUE, sizeof(int), 3);
+
+    resume( create(future_cons, 1024, 20, "fcons6", 1, f_queue) );
+    resume( create(future_prod, 1024, 20, "fprod3", 2, f_queue, (char*) &three) );
+    resume( create(future_prod, 1024, 20, "fprod4", 2, f_queue, (char*) &four) );
+    resume( create(future_prod, 1024, 20, "fprod5", 2, f_queue, (char*) &five) );
+    resume( create(future_prod, 1024, 20, "fprod6", 2, f_queue, (char*) &six) );
+    resume( create(future_cons, 1024, 20, "fcons7", 1, f_queue) );
+    resume( create(future_cons, 1024, 20, "fcons8", 1, f_queue) );
+    resume( create(future_cons, 1024, 20, "fcons9", 1, f_queue) );
+}
+
 void future_test(int nargs, char *args[])
 {
   
   one = 1;
   two = 2;
- 
+  printf("%s\n", args[0] );
+  printf("%s\n", args[1] );
+  printf("%s\n", args[2] );
+  
   if ( nargs == 2 && strncmp(args[1], "-pc", 3) == 0)
   {
     //kprintf("\n future_test : prodcons snippet called" );
@@ -119,7 +189,7 @@ void future_test(int nargs, char *args[])
       int future_flags = FUTURE_SHARED; // TODO - add appropriate future mode here
        
       // create the array of future pointers
-      if ((fibfut = (future_t **)getmem(sizeof(future_t *) * (fib + 1)))
+      if ((fibfut = (future_t **)getmem(sizeof(int *) * (fib + 1)))
           == (future_t **) SYSERR) {
         printf("getmem failed\n");
         return(SYSERR);
@@ -155,6 +225,18 @@ void future_test(int nargs, char *args[])
       return(OK);
     }
   }
+  else if( strncmp(args[1], "-fq1", 4) == 0 )
+    {
+        resume ( create((void *)futureq_test1, 4096, 10, "future_test",2, nargs, args));
+    }
+    else if(strncmp(args[1], "-fq2", 4) == 0)
+    {
+      resume ( create((void *)futureq_test2, 4096, 10, "future_test",2, nargs, args));
+    }
+    else if(strncmp(args[1], "-fq3", 4) == 0)
+    {
+      resume ( create((void *)futureq_test3, 4096, 10, "future_test",2, nargs, args));
+    }
   else
   {
     kprintf("\n check paramters");
@@ -168,6 +250,8 @@ void tscdf(int nargs, char *args[])
 {
     resume ( create((void *)stream_proc, 4096, 10, "tscdf",2, nargs, args));
 }
+
+
 
 shellcmd xsh_run(int nargs, char *args[])
 {
@@ -204,6 +288,7 @@ shellcmd xsh_run(int nargs, char *args[])
       //printf(" tscdf command called \n" );
       resume ( create((void *)tscdf, 4096, 10, "tscdf",2, nargs, args));
     }
+   
     else
     {
 	    printf("\n The given function is not supported. Kindly check 'run list' command for list of functions \n");
