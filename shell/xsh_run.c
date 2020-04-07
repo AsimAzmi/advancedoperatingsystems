@@ -148,7 +148,7 @@ void future_test(int nargs, char *args[])
   one = 1;
   two = 2;
   
-  
+
   if ( nargs == 2 && strncmp(args[1], "-pc", 3) == 0)
   {
     //kprintf("\n future_test : prodcons snippet called" );
@@ -276,7 +276,7 @@ shellcmd xsh_run(int nargs, char *args[])
       printf("\n exiting main command \n");
       return OK;
     }
-    else if(strncmp(args[0], "future_test", 11) == 0)
+    else if(strncmp(args[0], "futures_test", 12) == 0)
     {
       //printf("\nfuture_test called\n");
       resume ( create((void *)future_test, 4096, 10, "future_test",2, nargs, args));
