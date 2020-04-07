@@ -371,6 +371,8 @@ bool isGetQueueEmpty(future_t *f)
 
 void data_queue_insert(future_t *f, char* data)
 {
+	
+	//char* tailelemptr = f->data + (f->tail * f->size);
 
 	//kprintf("\n Inside insert");
 	if (isDataQueueFull(f))
@@ -387,9 +389,12 @@ void data_queue_insert(future_t *f, char* data)
 		
 		//kprintf("\n tail before insert %d", f->tail);
 		f->tail = (f->tail + 1) % f->max_elems;
-		f->data[f->tail] = *data;
-		//kprintf("\ntail afterinsert %d", f->tail);
-		//kprintf("\ndata %d", f->data[f->tail]);
+		char* tailelemptr = f->data + (f->tail * f->size);
+		memcpy(tailelemptr, data, f->size);
+		//kprintf("datainert %d", *tailelemptr);
+		//f->data[f->tail] = *data;
+		
+
 		
 		f->count++;
 	}
@@ -406,7 +411,9 @@ void data_queue_remove(future_t *f, char *data)
 	}
 	else
 	{
-		int head_data = f->data[f->head];
+		//int head_data = f->data[f->head];
+		char* headelemptr = f->data + (f->head * f->size);
+		memcpy(data, headelemptr, f->size);
 		//kprintf("\n head %d", f->head);
 		//kprintf("\n data %d", f->data[f->head]);
 		if (f->head == f->tail)
@@ -419,8 +426,7 @@ void data_queue_remove(future_t *f, char *data)
 			f->head = (f->head + 1) % f->max_elems;
 			f->count--;	
 		}	
-		
-		memcpy(data, &head_data, sizeof(int));	
+		//memcpy(data, &head_data, sizeof(int));	
 	}
 	
 }
