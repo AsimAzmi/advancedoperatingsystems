@@ -56,18 +56,18 @@ future_t* future_alloc(future_mode_t mode, uint size, uint nelems)
    		  		printf("data queue allocation failed\n");
           		return(SYSERR);
    			}
-   			kprintf("\n tail %d ", future_struct_addr->tail );
-   			kprintf("\n  head %d", future_struct_addr->head );
+   			//kprintf("\n tail %d ", future_struct_addr->tail );
+   			//kprintf("\n  head %d", future_struct_addr->head );
    			//kprintf("\n total %d", size*nelems);
 
-   			future_struct_addr->data[0] = 10;
-   			future_struct_addr->data[1] = 20;
-   			future_struct_addr->data[2] = 30;
-   			char* headelemptr = future_struct_addr->data + (future_struct_addr->head * future_struct_addr->size);
-			char* tailelemptr = future_struct_addr->data + (future_struct_addr->tail * future_struct_addr->size);
-   			kprintf("\n value 1 %d", (future_struct_addr->data[0]));
-   			kprintf("\n value 2 %d", (future_struct_addr->data[1]));
-   			kprintf("\n value 3 %d", (future_struct_addr->data[2]));
+   			//future_struct_addr->data[0] = 10;
+   			//future_struct_addr->data[1] = 20;
+   			//future_struct_addr->data[2] = 30;
+   			//char* headelemptr = future_struct_addr->data + (future_struct_addr->head * future_struct_addr->size);
+			//char* tailelemptr = future_struct_addr->data + (future_struct_addr->tail * future_struct_addr->size);
+   			//kprintf("\n value 1 %d", (future_struct_addr->data[0]));
+   			//kprintf("\n value 2 %d", (future_struct_addr->data[1]));
+   			//kprintf("\n value 3 %d", (future_struct_addr->data[2]));
    			
 
    			

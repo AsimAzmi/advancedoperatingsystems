@@ -84,8 +84,8 @@ void futureq_test1 (int nargs, char *args[]) {
     future_t *f_queue;
     f_queue = future_alloc(FUTURE_QUEUE, sizeof(int), 3);
 
-    printf(" tail %d\n", f_queue->tail);
-    printf(" head %d\n", f_queue->head);
+    //printf(" tail %d\n", f_queue->tail);
+    //printf(" head %d\n", f_queue->head);
 
     /*
     future_prod(f_queue, (char *)&three);
@@ -108,7 +108,7 @@ void futureq_test1 (int nargs, char *args[]) {
 }
 
 void futureq_test2 (int nargs, char *args[]) {
-    kprintf("\n fq2 called \n");
+    //kprintf("\n fq2 called \n");
     int seven = 7, eight = 8, nine=9, ten = 10, eleven = 11;
     future_t *f_queue;
     f_queue = future_alloc(FUTURE_QUEUE, sizeof(int), 3);
@@ -127,7 +127,7 @@ void futureq_test2 (int nargs, char *args[]) {
 }
 
 void futureq_test3 (int nargs, char *args[]) {
-    kprintf("\n fq3 called \n");
+    //kprintf("\n fq3 called \n");
     int three = 3, four = 4, five = 5, six = 6;
     future_t *f_queue;
     f_queue = future_alloc(FUTURE_QUEUE, sizeof(int), 3);
@@ -147,9 +147,7 @@ void future_test(int nargs, char *args[])
   
   one = 1;
   two = 2;
-  printf("%s\n", args[0] );
-  printf("%s\n", args[1] );
-  printf("%s\n", args[2] );
+  
   
   if ( nargs == 2 && strncmp(args[1], "-pc", 3) == 0)
   {
