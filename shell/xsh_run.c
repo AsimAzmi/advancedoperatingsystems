@@ -292,11 +292,11 @@ shellcmd xsh_run(int nargs, char *args[])
       printf(" tscdf_fq command called \n" );
       resume ( create((void *)tscdf_fq, 4096, 10, "tscdf",2, nargs, args));
     }
-    else if (strncmp(args[0], "tscdf", 5) == 0)
+    /*else if (strncmp(args[0], "tscdf", 5) == 0)
     {
       //printf(" tscdf command called \n" );
       resume ( create((void *)tscdf, 4096, 10, "tscdf",2, nargs, args));
-    }
+    }*/
     else
     {
 	    printf("\n The given function is not supported. Kindly check 'run list' command for list of functions \n");
