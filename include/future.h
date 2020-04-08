@@ -4,7 +4,7 @@
 
 #ifndef _FUTURE_H_
 #define _FUTURE_H_
-#define QUEUE_SIZE 10
+#define QUEUE_SIZE 30
 
 typedef enum {
   FUTURE_EMPTY,

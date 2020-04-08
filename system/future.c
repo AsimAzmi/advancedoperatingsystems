@@ -169,9 +169,12 @@ syscall future_get(future_t* future_t, char* data)
 			future_t->state = FUTURE_WAITING;
 			//printf("\n future_get : FUTURE_SHARED : saved %s", (char *)proctab[future_t->pid].prname);
 			get_queue_insert(future_t, getpid());
+			//kprintf("\n consumer suspended : %d \n ", future_t->pid);
 			suspend(future_t->pid);
 			//kprintf("future_get: FUTURE_SHARED : resumed %s ", (char *)proctab[future_t->pid].prname);
+			//kprintf("\nconsumer resumed: %d\n", future_t->pid);
 			data_queue_remove(future_t, data);
+
 			if (isDataQueueEmpty(future_t))
 			{
 				future_t->state = FUTURE_EMPTY;
@@ -257,11 +260,13 @@ syscall future_set(future_t* future_t, char* data)
 		
 		if ( future_t->state == FUTURE_WAITING)
 		{
+			//kprintf("\n inset->time %d\n", data[0]);
 			data_queue_insert(future_t, data);
 			future_t->state = FUTURE_READY;
 			if ( ! (isGetQueueEmpty(future_t)))
 			{
 				pid32 pid = get_queue_remove(future_t);
+				
 				resume(pid);				
 			}
 
@@ -270,6 +275,7 @@ syscall future_set(future_t* future_t, char* data)
 		{
 			if (isDataQueueFull(future_t))
 			{
+				//kprintf("work qeue is full");
 				future_t->pid = getpid();
 				set_queue_insert(future_t,getpid());
 				suspend(future_t->pid);
@@ -278,6 +284,7 @@ syscall future_set(future_t* future_t, char* data)
 				if ( ! (isGetQueueEmpty(future_t)) )
 				{
 					pid32 pid = get_queue_remove(future_t);
+					//kprintf("\nconsumer resumed: %d\n", pid);
 					resume(pid);				
 				}
 			}
@@ -288,11 +295,11 @@ syscall future_set(future_t* future_t, char* data)
 				if ( ! (isGetQueueEmpty(future_t)))
 				{
 					pid32 pid = get_queue_remove(future_t);
+					//kprintf("\nconsumer resumed: %d\n", pid);
 					resume(pid);				
 				}
 			}
 		}
-		
 	}
 	//data_queue_insert(future_t,data);
 
@@ -390,8 +397,10 @@ void data_queue_insert(future_t *f, char* data)
 		//kprintf("\n tail before insert %d", f->tail);
 		f->tail = (f->tail + 1) % f->max_elems;
 		char* tailelemptr = f->data + (f->tail * f->size);
-		memcpy(tailelemptr, data, f->size);
-		//kprintf("datainert %d", *tailelemptr);
+		memcpy(tailelemptr ,data, f->size);
+		//kprintf("\n inserted time : %d, value : %d, process %d \n",*(tailelemptr), *(tailelemptr+sizeof(int)), getpid());
+		//kprintf("i\nndataqueue time%d\n", tailelemptr[0]);
+		
 		//f->data[f->tail] = *data;
 		
 

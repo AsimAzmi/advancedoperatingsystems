@@ -6,8 +6,9 @@
 #include <stdlib.h>
 #include <prodcons_bb.h>
 #include <string.h> 
-#include <future.h>
+//#include <future.h>
 #include <tscdf_a5.h>
+
 
 /* xsh_run - take argument to map to a function and run */
 
@@ -249,6 +250,11 @@ void tscdf(int nargs, char *args[])
     resume ( create((void *)stream_proc, 4096, 10, "tscdf",2, nargs, args));
 }
 
+void tscdf_fq(int nargs, char *args[])
+{
+    resume ( create((void *)stream_proc_futures, 4096, 10, "tscdf_fq",2, nargs, args));
+}
+
 
 
 shellcmd xsh_run(int nargs, char *args[])
@@ -281,12 +287,16 @@ shellcmd xsh_run(int nargs, char *args[])
       //printf("\nfuture_test called\n");
       resume ( create((void *)future_test, 4096, 10, "future_test",2, nargs, args));
     }
+    else if (strncmp(args[0], "tscdf_fq", 8) == 0)
+    {
+      printf(" tscdf_fq command called \n" );
+      resume ( create((void *)tscdf_fq, 4096, 10, "tscdf",2, nargs, args));
+    }
     else if (strncmp(args[0], "tscdf", 5) == 0)
     {
       //printf(" tscdf command called \n" );
       resume ( create((void *)tscdf, 4096, 10, "tscdf",2, nargs, args));
     }
-   
     else
     {
 	    printf("\n The given function is not supported. Kindly check 'run list' command for list of functions \n");

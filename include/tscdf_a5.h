@@ -3,6 +3,7 @@
 
 
 #include <xinu.h>
+#include <future.h>
 
 
 
@@ -23,6 +24,10 @@ typedef struct stream {
 
 int stream_proc(int nargs, char* args[]);
 void stream_consumer(int32 id, struct stream *str);
+
+int stream_proc_futures(int nargs, char* args[]);
+void future_stream_consumer(int32 id, struct future_t *f);
+
 void stream_producer();
 
  extern int num_streams;
