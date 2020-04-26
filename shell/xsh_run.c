@@ -8,6 +8,7 @@
 #include <string.h> 
 //#include <future.h>
 #include <tscdf_a5.h>
+#include<fs.h>
 
 
 /* xsh_run - take argument to map to a function and run */
@@ -255,6 +256,10 @@ void tscdf_fq(int nargs, char *args[])
     resume ( create((void *)stream_proc_futures, 4096, 10, "tscdf_fq",2, nargs, args));
 }
 
+void fstest_dummy(int nargs, char *args[])
+{
+  uint return_value = fstest(nargs, args);
+}
 
 
 shellcmd xsh_run(int nargs, char *args[])
@@ -296,6 +301,10 @@ shellcmd xsh_run(int nargs, char *args[])
     {
       printf(" tscdf command called \n" );
       resume ( create((void *)tscdf, 4096, 10, "tscdf",2, nargs, args));
+    }
+    else if(strncmp(args[0], "fstest", 6) == 0)
+    {
+       resume ( create((void *)fstest_dummy, 4096, 10, "fstest",2, nargs, args));
     }
     else
     {
