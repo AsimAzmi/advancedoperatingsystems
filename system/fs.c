@@ -498,10 +498,10 @@ int fs_write(int fd, void *buf, int nbytes)
   
   /* Check for valid nbytes */
   
-  /*if(nbytes <=0 || strlen((char*)buf)==0){
+  if(nbytes <=0 || strlen((char*)buf)==0){
     printf("\n fs_write: No data to write");
-    return SYSERR;  
-  }*/
+    return nbytes;  
+  }
   
   /* if buffer data is less than nbytes then reduce nbytes*/
   if(strlen((char*)buf) < nbytes){
