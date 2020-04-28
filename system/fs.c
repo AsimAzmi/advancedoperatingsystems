@@ -254,7 +254,8 @@ int fs_open(char *filename, int flags)
   {
     if(oft[j].in.id == fsd.root_dir.entry[i].inode_num)
     {
-      if(oft[j].state == FSTATE_CLOSED)
+      index_o_file = j;
+      /*if(oft[j].state == FSTATE_CLOSED)
       {
         index_o_file = j;
         break;
@@ -263,7 +264,7 @@ int fs_open(char *filename, int flags)
       {
         printf("\n fs_open: File already opened.");
         return SYSERR;
-      }
+      }*/
     }
 
     if(oft[j].state == FSTATE_CLOSED && index_o_file == -1){
