@@ -51,7 +51,7 @@ uint fstest(int nargs, char *args[]) {
 // Test 1
     // Create test file
     fd = fs_create("Test_File", O_CREAT);
-       
+     kprintf("file create success");  
     // Fill buffer with random stuff
     for(i=0; i<SIZE; i++)
     {
@@ -67,6 +67,7 @@ uint fstest(int nargs, char *args[]) {
         goto clean_up;
     }
 
+    printf("\n file write success");
     // Now my file offset is pointing at EOF file, i need to bring it back to start of file
     // Assuming here implementation of fs_seek is like "original_offset = original_offset + input_offset_from_fs_seek"
     fs_seek(fd,-rval); 
@@ -89,6 +90,7 @@ uint fstest(int nargs, char *args[]) {
         printf("\n\rReturn val for fclose : %d",rval);
     }
 
+    printf("\n closed successfully" );
 // Test 2
    // Link dst file to file from above
    rval2 = fs_link("Test_File", "Dst_Test_File");
@@ -97,7 +99,10 @@ uint fstest(int nargs, char *args[]) {
        printf("\n\r File link failed");
        goto clean_up;
    }
+   printf("\n linked successfull ");
    int fd1 = fs_open("Dst_Test_File", 0);
+
+   printf("\n open successfull");
    //read the file 
    rval = fs_read(fd1, buf3, rval);
    buf3[rval] = '\0';
@@ -123,7 +128,7 @@ uint fstest(int nargs, char *args[]) {
        printf("\n\r File unlink failed");
        goto clean_up;
    }
-
+   printf("unlink success");
 clean_up:
     freemem(buf1,SIZE);
     freemem(buf2,SIZE);

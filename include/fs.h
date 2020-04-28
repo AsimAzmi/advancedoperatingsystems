@@ -21,6 +21,11 @@
 #define INODE_TYPE_FILE 1
 #define INODE_TYPE_DIR 2
 
+#define USED 1
+
+// added to mainetain used iinodes
+int inodes_state[128]; //512/4 = 128 Or DEFAULT_NUM_INODES
+
 /* Structure of inode*/
 struct inode {
   int id;
