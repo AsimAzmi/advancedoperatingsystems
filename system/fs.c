@@ -363,7 +363,7 @@ int fs_create(char *filename, int mode)
   /* fill up the inode information */ 
   in.id = fsd.inodes_used;
   in.type = INODE_TYPE_FILE;
-  in.nlink = 0;
+  in.nlink = 1;
   in.device = 0;
   in.size = 0;
 
@@ -429,50 +429,69 @@ int fs_read(int fd, void *buf, int nbytes) {
     return SYSERR;
   }
   
-  if(oft[fd].in.size == 0){
-    printf("\n fs_read : file is empty");
+  int inode_number, status;
+  struct inode in_temp;
+
+  inode_number = oft[fd].de->inode_num;
+ 
+  if((status = fs_get_inode_by_num(0, inode_number, &in_temp)) == SYSERR){
+    printf("\n fs_write : Failed to retrieve inode from FSD");;
     return SYSERR;
   }
+  printf("\n fs_read: found inode %d size %d",in_temp.id, in_temp.size);
 
-  nbytes += oft[fd].fileptr;
+
+  /*if(oft[fd].in.size == 0){
+    printf("\n fs_read : file is empty");
+    return SYSERR;
+  }*/
+  if (in_temp.size == 0)
+  {
+    printf("\n fs_read : empty file ");
+    return OK;
+  }
+
+  //nbytes += oft[fd].fileptr;
   int no_of_blocks=0;
   no_of_blocks = nbytes / MDEV_BLOCK_SIZE;
   if(nbytes % MDEV_BLOCK_SIZE !=0)
   {
     no_of_blocks++;
   }
-
-  
  
-  if (no_of_blocks > oft[fd].in.size)
-  {
-   no_of_blocks = oft[fd].in.size; 
-  }
- 
-  int i, j;
-  i = (oft[fd].fileptr / MDEV_BLOCK_SIZE);
-
+  //int i, j;
+  //i = (oft[fd].fileptr / MDEV_BLOCK_SIZE);
+  //i = 0;
   
+  //printf("\n reading starting from %d ", oft[fd].fileptr % MDEV_BLOCK_SIZE);
+
   memset(buf, NULL, MAXSIZE);
   int temp=0;
   int data_bytes=0;
-  for(j=(oft[fd].fileptr % MDEV_BLOCK_SIZE); i<no_of_blocks; i++)
+  int offset = 0;
+
+  for (int i = 0; i < in_temp.size; i++)
   {
+    printf("\n retrieve block %d", in_temp.blocks[i]);
+    offset = oft[fd].fileptr % MDEV_BLOCK_SIZE;
+    printf("\n offset %d", offset);
     memset(block_cache, NULL, MDEV_BLOCK_SIZE+1);
-    
-    if (bs_bread(0, oft[fd].in.blocks[i], j, block_cache, MDEV_BLOCK_SIZE-j) == SYSERR)
+    if (bs_bread(0, in_temp.blocks[i], offset, block_cache, MDEV_BLOCK_SIZE) == SYSERR)
     {
       printf("\n fs_read : read file failed");
       return SYSERR;
-    }   
+    }
     strcpy((buf+temp), block_cache);
+    printf("\n%s", block_cache);
+    printf("\n**************************************");
     temp = strlen(block_cache);
     data_bytes += temp;
-    
-    j=0;
+    oft[fd].fileptr = data_bytes;
+    //printf("%d blockupdated : %d bytes ",i, data_bytes );
+    //offset=0;
   }
-  oft[fd].fileptr = data_bytes;
-  return data_bytes;
+
+  return oft[fd].fileptr;
 }
 
 int fs_write(int fd, void *buf, int nbytes) 
@@ -497,33 +516,18 @@ int fs_write(int fd, void *buf, int nbytes)
     return SYSERR;
   }
   
-  /* Check for valid nbytes */
-  
-  if(nbytes <=0 || strlen((char*)buf)==0){
-    printf("\n fs_write: No data to write");
-    return nbytes;  
-  }
-  
-  /* if buffer data is less than nbytes then reduce nbytes*/
-  if(strlen((char*)buf) < nbytes){
-    nbytes = strlen((char*)buf);
-  }
-  
-  /* delete the data already present */
   struct inode in_temp;
-  if(oft[fd].in.size > 0)
-  {
-    in_temp = oft[fd].in;
-    while (oft[fd].in.size>0)
-    {
-      if(fs_clearmaskbit(in_temp.blocks[oft[fd].in.size-1]) != OK)
-      {
-        printf("\n fs_write :Error in clearing block %d",oft[fd].in.size-1);
-        return SYSERR;
-      }
-      oft[fd].in.size--;
-    }
+
+  int status;
+  int inode_number;
+  inode_number = oft[fd].de->inode_num;
+
+  if((status = fs_get_inode_by_num(0, inode_number, &in_temp)) == SYSERR){
+    printf("\n fs_write : Failed to retrieve inode from FSD");;
+    return SYSERR;
   }
+
+  //kprintf("\n fs_write: retrieved inode %d", in_temp.nlink);
   
   int blocks_count = 0;
   blocks_count = nbytes / MDEV_BLOCK_SIZE;
@@ -534,24 +538,18 @@ int fs_write(int fd, void *buf, int nbytes)
   
   int data_in_bytes;
   data_in_bytes = nbytes;
+  int i = 0;
+  int temp_fptr = oft[fd].fileptr;
   
-  /* Initialize j to first data block */
-  int i, j;
-  j = FIRST_INODE_BLOCK + NUM_INODE_BLOCKS; 
-  for(i=0; i<blocks_count && j<MDEV_BLOCK_SIZE; j++)
+  for ( int j = 0; j < 512; j++)
   {
-    if(fs_getmaskbit(j) == 0)
+    if (fs_getmaskbit(j) ==0)
     {
-      /* clear the data block to write */
-      memset(block_cache, NULL, MDEV_BLOCK_SIZE);
+     // printf("\n block found");
 
-      //if(writeBlock(0, j, 0, block_cache, MDEV_BLOCK_SIZE) == SYSERR)
-      if(bs_bwrite(0, j, 0, block_cache, MDEV_BLOCK_SIZE) == SYSERR)
-      {
-        //printf("\n Unable to free block %d.",j);
-        printf("\n fs_write : Writing to file failed. Free Block failed %d",j);
-        return SYSERR;
-      }
+      in_temp.blocks[i] = j;
+      printf("\n entering block %d", in_temp.blocks[i]);
+      //printf("\n writing on block %d", j);
       
       /* get the minimum bytes to write */
       int minBytes = 0;
@@ -559,38 +557,53 @@ int fs_write(int fd, void *buf, int nbytes)
         minBytes = MDEV_BLOCK_SIZE;
       else
         minBytes = data_in_bytes;
+      
       /* copy the data into block_cache */
-      memcpy(block_cache, buf, minBytes);
+      memcpy(block_cache, buf, MDEV_BLOCK_SIZE);
       
       /* write the data into the data block */
       //if(writeBlock(0, j, 0, block_cache, MDEV_BLOCK_SIZE) == SYSERR){
       if(bs_bwrite(0, j, 0, block_cache, MDEV_BLOCK_SIZE) == SYSERR)
       {  
-        printf("\n Unable to write to block %d.",j);
-        printf("\n Could not write to file.");
-        return -1;
+        printf("\n fs_write : write failed on block %d.",j);
+        return SYSERR;
       }
-      
+      //oft[fd].fileptr = oft[fd].fileptr + 
       buf = (char*) buf + minBytes;
+      printf("\n%s",block_cache);
+      printf("\n****************************");
       data_in_bytes = data_in_bytes - minBytes;
-      fs_setmaskbit(j);
-      
-      /* keep track of this data block into blocks[] */
-      oft[fd].in.blocks[i++] = j;
+      //temp_fptr = temp_fptr + minBytes;   
+      fs_setmaskbit(j);   
+      i++;
+    }
+    
+    if (i >= blocks_count)
+    {
+      break;
     }
   }
-  /* Update the size of the data blocks */
-  int status;
-  oft[fd].in.size = blocks_count;
-  printf("\n Size updated to %d blocks.",oft[fd].in.size);
-  if((status = fs_put_inode_by_num(0, oft[fd].in.id, &oft[fd].in))==SYSERR){
-    printf("\n Could not write inode.");
-    printf("\n Could not write file.");
+
+  if (data_in_bytes == 0)
+  {
+    printf("\n fs_write : all data written"); 
+    oft[fd].fileptr = nbytes - data_in_bytes;  
+  }
+  else
+  {
+    printf("\n all data not written");
+    oft[fd].fileptr = nbytes - data_in_bytes;
     return SYSERR;
   }
-  //oft[fd].filesize = nbytes;
-  oft[fd].fileptr = nbytes;
-  return nbytes;
+
+  in_temp.size = blocks_count;
+  if((status = fs_put_inode_by_num(0, in_temp.id, &in_temp))==SYSERR){ 
+    printf("\n fs_write: Could not write inode.");
+    return SYSERR;
+  }
+  printf("\n indoe put back %d  size %d", in_temp.id, in_temp.size);
+  
+  return oft[fd].fileptr;
 
 }
 
@@ -676,7 +689,7 @@ int fs_unlink(char *filename)
   }*/
   
 
-  if ( in.nlink > 0)
+  if ( in.nlink > 1)
   {
     in.nlink--;
   }

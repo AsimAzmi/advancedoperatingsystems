@@ -44,13 +44,14 @@ uint fstest(int nargs, char *args[]) {
     fs_mkfs(0,DEFAULT_NUM_INODES); /* bsdev 0*/
     fs_testbitmask();
     
-    buf1 = getmem(SIZE*sizeof(char));
-    buf2 = getmem(SIZE*sizeof(char));
-    buf3 = getmem(SIZE*sizeof(char));
+    buf1 = getmem(SIZE*sizeof(char) );
+    buf2 = getmem(SIZE*sizeof(char) );
+    buf3 = getmem(SIZE*sizeof(char) );
     
 // Test 1
     // Create test file
     fd = fs_create("Test_File", O_CREAT);
+    int fd_1 = fs_create("Test_File1", O_CREAT);
      kprintf("file create success");  
     // Fill buffer with random stuff
     for(i=0; i<SIZE; i++)
@@ -59,30 +60,34 @@ uint fstest(int nargs, char *args[]) {
         j = j+33;
         buf1[i] = (char) j;
     }
-    
+    //printf("\n\r printing buffer before write %s",buf1);
+    //printf("\n\r **************************");
     rval = fs_write(fd,buf1,SIZE);
     if(rval == 0 || rval != SIZE )
     {
         printf("\n\r File write failed");
         goto clean_up;
     }
-
-    printf("\n file write success");
+    
+    printf("\n file write success: rval %d", rval);
     // Now my file offset is pointing at EOF file, i need to bring it back to start of file
     // Assuming here implementation of fs_seek is like "original_offset = original_offset + input_offset_from_fs_seek"
     fs_seek(fd,-rval); 
     
     //read the file 
     rval = fs_read(fd, buf2, rval);
-    buf2[rval] = '\0';
+    //buf2[rval] = '\0';
 
     if(rval == 0)
     {
         printf("\n\r File read failed");
         goto clean_up;
     }
-        
+       
     printf("\n\rContent of file %s",buf2);
+    buf1[rval] = '\0';
+    buf2[rval] = '\0'; 
+    printf("\n\r%d comparing read and write", memcmp(buf1, buf2, rval));
     
     rval2 = fs_close(fd);
     if(rval2 != OK)
@@ -105,7 +110,7 @@ uint fstest(int nargs, char *args[]) {
    printf("\n open successfull");
    //read the file 
    rval = fs_read(fd1, buf3, rval);
-   buf3[rval] = '\0';
+   //buf3[rval] = '\0';
 
    if(rval == 0)
    {
