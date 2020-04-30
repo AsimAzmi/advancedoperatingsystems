@@ -247,12 +247,13 @@ int fs_open(char *filename, int flags)
 
   int j;
   int index_o_file = -1;
-  for(j= 0; j< NUM_FD; j++)
+  int flag = 0;
+  for(j = 0; j< NUM_FD; j++)
   {
     if(oft[j].in.id == fsd.root_dir.entry[i].inode_num)
     {
       index_o_file = j;
-      /*if(oft[j].state == FSTATE_CLOSED)
+      if(oft[j].state == FSTATE_CLOSED)
       {
         index_o_file = j;
         break;
@@ -260,14 +261,22 @@ int fs_open(char *filename, int flags)
       else if(oft[j].state == FSTATE_OPEN)
       {
         printf("\n fs_open: File already opened.");
-        return SYSERR;
-      }*/
+        flag = 1;
+        break; //return SYSERR;
+      }
     }
 
     if(oft[j].state == FSTATE_CLOSED && index_o_file == -1){
       index_o_file = j;
     }
   }
+
+  
+  if (flag == 1)
+    {
+      printf("\n file already opened");
+      return SYSERR;
+    }
 
   if(index_o_file == -1)
   {
@@ -489,7 +498,8 @@ int fs_read(int fd, void *buf, int nbytes) {
     //offset=0;
   }
 
-  return oft[fd].fileptr;
+  //return oft[fd].fileptr;
+  return nbytes;
 }
 
 int fs_write(int fd, void *buf, int nbytes) 
@@ -599,10 +609,11 @@ int fs_write(int fd, void *buf, int nbytes)
     printf("\n fs_write: Could not write inode.");
     return SYSERR;
   }
-  printf("\n indoe put back %d  size %d", in_temp.id, in_temp.size);
+  printf("\n indoe put back %d  size %d", in_temp.id, in_temp.size );
+  printf("\n fileptr, data_in_bytes, minBytes");
   
-  return oft[fd].fileptr;
-
+  //return oft[fd].fileptr;
+  return nbytes;
 }
 
 int fs_link(char *src_filename, char* dst_filename) 

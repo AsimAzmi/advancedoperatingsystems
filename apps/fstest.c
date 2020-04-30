@@ -106,6 +106,12 @@ uint fstest(int nargs, char *args[]) {
    }
    printf("\n linked successfull ");
    int fd1 = fs_open("Dst_Test_File", 0);
+   int fd2 = fs_open("Dst_Test_File", 0);
+   if ( fd2 == SYSERR)
+   {
+    return SYSERR;
+   }
+
 
    printf("\n open successfull");
    //read the file 
