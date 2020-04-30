@@ -271,11 +271,11 @@ int fs_open(char *filename, int flags)
     }
   }
 
-  
+
   if (flag == 1)
     {
       printf("\n file already opened");
-      return SYSERR;
+      return ;
     }
 
   if(index_o_file == -1)
