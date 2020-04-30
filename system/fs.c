@@ -221,10 +221,7 @@ void fs_printfreemask(void) { // print block bitmask
   printf("\n");
 }
 
-int writeBlock(int dev, int block, int offset, void *buf, int len){
-  /* API to bs_bwrite(int dev, int block, int offset, void *buf, int len) */
-  return bs_bwrite(dev, block, offset, buf, len);
-}
+
 
 int fs_open(char *filename, int flags) 
 {
@@ -473,9 +470,9 @@ int fs_read(int fd, void *buf, int nbytes) {
   for (int i = 0; i < in_temp.size; i++)
   {
     printf("\n retrieve block %d", in_temp.blocks[i]);
-    offset = oft[fd].fileptr % MDEV_BLOCK_SIZE;
+    //offset = oft[fd].fileptr % MDEV_BLOCK_SIZE;
     printf("\n offset %d", offset);
-    memset(block_cache, NULL, MDEV_BLOCK_SIZE+1);
+    //memset(block_cache, NULL, MDEV_BLOCK_SIZE+1);
     if (bs_bread(0, in_temp.blocks[i], offset, block_cache, MDEV_BLOCK_SIZE) == SYSERR)
     {
       printf("\n fs_read : read file failed");
@@ -487,6 +484,7 @@ int fs_read(int fd, void *buf, int nbytes) {
     temp = strlen(block_cache);
     data_bytes += temp;
     oft[fd].fileptr = data_bytes;
+    printf("\n data_bytes %d:" ,data_bytes);
     //printf("%d blockupdated : %d bytes ",i, data_bytes );
     //offset=0;
   }
@@ -541,7 +539,7 @@ int fs_write(int fd, void *buf, int nbytes)
   int i = 0;
   int temp_fptr = oft[fd].fileptr;
   
-  for ( int j = 0; j < 512; j++)
+  for ( int j = 3; j < 512; j++)
   {
     if (fs_getmaskbit(j) ==0)
     {
