@@ -251,19 +251,15 @@ int fs_open(char *filename, int flags)
   struct inode in_temp;
   for(j = 0; j< NUM_FD; j++)
   {
+    if(oft[j].in.id == fsd.root_dir.entry[i].inode_num && oft[j].state == FSTATE_OPEN)
+    {
+       printf("file already open");
+       return SYSERR; 
+    }
+
     if(oft[j].in.id == fsd.root_dir.entry[i].inode_num && oft[j].state != FSTATE_OPEN)
     {
-      /*index_o_file = j;
-      if(oft[j].state == FSTATE_CLOSED)
-      {
-        index_o_file = j;
-        break;
-      }
-      else if(oft[j].state == FSTATE_OPEN)
-      {
-        printf("\n fs_open: File already opened.");
-        flag = 1;
-        break;*/ //return SYSERR;
+       printf("\n file found");
        fs_get_inode_by_num(0, oft[j].in.id , &in_temp);
        oft[j].state = FSTATE_OPEN;
        oft[j].fileptr = 0;
@@ -272,10 +268,13 @@ int fs_open(char *filename, int flags)
        oft[j].flag = flags;
        fs_put_inode_by_num(0, oft[j].in.id , &oft[j].in);
        return j;
-      }
     }
-
-    return SYSERR;
+     
+    
+  }
+    
+  printf("\n file not found");
+  return SYSERR;
     /*if(oft[j].state == FSTATE_CLOSED && index_o_file == -1){
       index_o_file = j;
     }
