@@ -221,7 +221,7 @@ void fs_printfreemask(void) { // print block bitmask
   printf("\n");
 }
 
-/*int fs_open(char *filename, int flags)
+int fs_open(char *filename, int flags)
 {
     if (flags != O_RDONLY && flags != O_WRONLY && flags != O_RDWR){
         printf("Mode Invalid");
@@ -247,65 +247,9 @@ void fs_printfreemask(void) { // print block bitmask
         }
     }
     return SYSERR;
-}*/
-
-int fs_open(char *filename, int flags) 
-{
-  if(!(flags == O_WRONLY || flags == O_RDONLY || flags == O_RDWR))
-  {
-    printf("\n fs_open : Incorrect flag entered.");
-    return SYSERR;
-  }
-  
-  if(fsd.root_dir.numentries <= 0){
-    return SYSERR;
-  }
-  int i;
-  for(i=0; i<fsd.root_dir.numentries; i++)
-  {
-    if(strcmp(fsd.root_dir.entry[i].name, filename)==0 )
-    {
-      break;
-    }
-  }
-
-  if(i >= fsd.root_dir.numentries){
-    printf("\n fs_open : File not present in FSD (FileSystem)");
-    return SYSERR;  
-  }
-
-  int j;
-  int index_o_file = -1;
-  int flag = 0;
-  struct inode in_temp;
-  for(j = 0; j< NUM_FD; j++)
-  {
-    if(oft[j].in.id == fsd.root_dir.entry[i].inode_num && oft[j].state == FSTATE_OPEN)
-    {
-       printf("file already open");
-       return SYSERR; 
-    }
-
-    if(oft[j].in.id == fsd.root_dir.entry[i].inode_num && oft[j].state != FSTATE_OPEN)
-    {
-       printf("\n file found");
-       fs_get_inode_by_num(0, oft[j].in.id , &in_temp);
-       oft[j].state = FSTATE_OPEN;
-       oft[j].fileptr = 0;
-       oft[j].in = in_temp;
-       oft[j].de = &fsd.root_dir.entry[j];
-       oft[j].flag = flags;
-       fs_put_inode_by_num(0, oft[j].in.id , &oft[j].in);
-       return j;
-    }
-     
-    
-  }
-    
-  printf("\n file not found");
-  return SYSERR;
- 
 }
+
+
 
 int fs_close(int fd) 
 {
@@ -424,11 +368,6 @@ int fs_seek(int fd, int offset)
     return SYSERR;
   }
  
-  /*if(oft[fd].state != FSTATE_OPEN){
-    printf("\n fs_seek : failed: file is noteopen");
-    return SYSERR;
-  }*/
-
   oft[fd].fileptr =  oft[fd].fileptr + offset;
   return oft[fd].fileptr;
 }
@@ -472,13 +411,6 @@ int fs_read(int fd, void *buf, int nbytes) {
     no_of_blocks++;
   }
  
-  //int inode_block = (ft.fileptr / fsd.blocksz);
-  //int inode_offset = (ft.fileptr % fsd.blocksz);
-  //int i, j;
-  //i = (oft[fd].fileptr / MDEV_BLOCK_SIZE);
-  //i = 0;
-  
-  //printf("\n reading starting from %d ", oft[fd].fileptr % MDEV_BLOCK_SIZE);
 
   memset(buf, NULL, MAXSIZE);
   int temp=0;
@@ -488,15 +420,12 @@ int fs_read(int fd, void *buf, int nbytes) {
   for (int i = 0; i < in_temp.size; i++)
   {
     printf("\n retrieve block %d", in_temp.blocks[i]);
-    //offset = oft[fd].fileptr % MDEV_BLOCK_SIZE;
     printf("\n offset %d", offset);
-    //memset(block_cache, NULL, MDEV_BLOCK_SIZE+1);
     if (bs_bread(0, in_temp.blocks[i], offset, block_cache, MDEV_BLOCK_SIZE) == SYSERR)
     {
       printf("\n fs_read : read file failed");
       return SYSERR;
     }
-    //strcpy((buf+temp), block_cache);
     memcpy((buf+temp), block_cache, strlen(block_cache));
     printf("\n%s", block_cache);
     printf("\n**************************************");
@@ -504,11 +433,8 @@ int fs_read(int fd, void *buf, int nbytes) {
     data_bytes += temp;
     oft[fd].fileptr = data_bytes;
     printf("\n data_bytes %d:" ,data_bytes);
-    //printf("%d blockupdated : %d bytes ",i, data_bytes );
-    //offset=0;
   }
 
-  //return oft[fd].fileptr;
   return nbytes;
 }
 
@@ -545,7 +471,6 @@ int fs_write(int fd, void *buf, int nbytes)
     return SYSERR;
   }
 
-  //kprintf("\n fs_write: retrieved inode %d", in_temp.nlink);
   
   int blocks_count = 0;
   blocks_count = nbytes / MDEV_BLOCK_SIZE;
@@ -563,11 +488,9 @@ int fs_write(int fd, void *buf, int nbytes)
   {
     if (fs_getmaskbit(j) ==0)
     {
-     // printf("\n block found");
 
       in_temp.blocks[i] = j;
       printf("\n entering block %d", in_temp.blocks[i]);
-      //printf("\n writing on block %d", j);
       
       /* get the minimum bytes to write */
       int minBytes = 0;
