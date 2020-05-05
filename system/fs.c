@@ -629,7 +629,7 @@ int fs_write(int fd, void *buf, int nbytes)
   return nbytes;
 }
 
-
+/*
 int fs_link(char *src_filename, char* dst_filename) 
 {
   int inode_number = 0;
@@ -724,6 +724,54 @@ int fs_unlink(char *filename)
   }
   fsd.root_dir.numentries--;
     return OK;
+}*/
+//hardlink creation
+int fs_link(char *src_filename, char *dst_filename)
+{
+    int fd;
+    struct inode node;
+    struct filetable ft;
+    for (fd = 0; fd < fsd.root_dir.numentries; fd++){       
+        if(strncmp(src_filename, fsd.root_dir.entry[fd].name, FILENAMELEN + 1) == 0){
+            ft.de = &(fsd.root_dir.entry[fsd.root_dir.numentries++]);
+            (ft.de)->inode_num = fsd.root_dir.entry[fd].inode_num;         
+            strcpy((ft.de)->name, dst_filename);
+            fs_get_inode_by_num(0, fsd.root_dir.entry[fd].inode_num, &node);
+            node.nlink = node.nlink + 1;
+            fs_put_inode_by_num(0, fsd.root_dir.entry[fd].inode_num, &node);
+            return OK;
+        }
+    }
+    return SYSERR;
+}
+
+//remove hard link pointed by given name
+int fs_unlink(char *filename)
+{
+    int fd, i;
+    struct inode node;
+    for(fd = 0; fd < fsd.root_dir.numentries; fd++){
+        if(strncmp(filename, fsd.root_dir.entry[fd].name, FILENAMELEN + 1) == 0){   
+            fs_get_inode_by_num(0, fsd.root_dir.entry[fd].inode_num, &node);
+            if (node.nlink > 1){
+                node.nlink -= 1;
+                fs_put_inode_by_num(0, fsd.root_dir.entry[fd].inode_num, &node);
+                fsd.root_dir.numentries--;
+                return OK;
+            }
+            else if(node.nlink == 1){
+                int blkLength = sizeof(node.blocks) / sizeof(node.blocks[0]);
+                for (i = 0; i < blkLength; i++){
+                    fs_clearmaskbit(i);
+                }
+                fs_put_inode_by_num(0, fsd.root_dir.entry[fd].inode_num, &node);
+                fsd.root_dir.numentries--;
+                return OK;
+            }
+        }
+    }
+
+    return SYSERR;
 }
 
 
