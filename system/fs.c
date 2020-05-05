@@ -702,10 +702,14 @@ int fs_unlink(char *filename)
   }
   else if ( in.nlink == 1)
   {
-    int block_length = sizeof(in.blocks)/sizeof(in.blocks[0]);
-    for ( int i = 0; i < block_length; i++)
+    while ( in.size > 0)
     {
-      fs_clearmaskbit(i);
+      if (fs_clearmaskbit(in.size - 1) != OK)
+      {
+        printf("unlink: cant clear block\n");
+        return SYSERR;
+      }
+      in.size--;
     }
     printf("\n deleting the file");
   }
@@ -713,13 +717,8 @@ int fs_unlink(char *filename)
     printf("\n fs_link : fs_put_inode_by_num() failed");
     return SYSERR;
   }
-
-  //fsd.root_dir.entry[fsd.root_dir.numentries].inode_num = 0;
-  //filename = NULL;
-  //strcpy(fsd.root_dir.entry[fsd.root_dir.numentries].name, filename);
   fsd.root_dir.numentries--;
-  
-  return OK;
+    return OK;
 }
 #endif /* FS */
   
