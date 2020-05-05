@@ -157,7 +157,7 @@ uint fstest(int nargs, char *args[]) {
    }
 
 // Test 3
-   rval2 = fs_unlink("Dst_Test_File");
+   rval2 = fs_unlink("Test_File");
    if(rval2 != OK)
    {
        printf("\n\r File unlink failed");
@@ -165,6 +165,7 @@ uint fstest(int nargs, char *args[]) {
    }
    printf("unlink success");
    int fd3_open = fs_open("Dst_Test_File", 0);
+   printf("%d", fd3_open );
 
 clean_up:
     freemem(buf1,SIZE);

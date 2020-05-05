@@ -698,6 +698,7 @@ int fs_unlink(char *filename)
   if ( in.nlink > 1)
   {
     in.nlink--;
+    printf("\n reducing the links");
   }
   else if ( in.nlink == 1)
   {
@@ -706,15 +707,16 @@ int fs_unlink(char *filename)
     {
       fs_clearmaskbit(i);
     }
+    printf("\n deleting the file");
   }
   if((status = fs_put_inode_by_num(0, inode_number, &in))==SYSERR){
     printf("\n fs_link : fs_put_inode_by_num() failed");
     return SYSERR;
   }
 
-  fsd.root_dir.entry[fsd.root_dir.numentries].inode_num = 0;
-  filename = NULL;
-  strcpy(fsd.root_dir.entry[fsd.root_dir.numentries].name, filename);
+  //fsd.root_dir.entry[fsd.root_dir.numentries].inode_num = 0;
+  //filename = NULL;
+  //strcpy(fsd.root_dir.entry[fsd.root_dir.numentries].name, filename);
   fsd.root_dir.numentries--;
   
   return OK;
