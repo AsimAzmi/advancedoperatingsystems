@@ -221,7 +221,7 @@ void fs_printfreemask(void) { // print block bitmask
   printf("\n");
 }
 
-int fs_open(char *filename, int flags)
+/*int fs_open(char *filename, int flags)
 {
     if (flags != O_RDONLY && flags != O_WRONLY && flags != O_RDWR){
         printf("Mode Invalid");
@@ -247,9 +247,9 @@ int fs_open(char *filename, int flags)
         }
     }
     return SYSERR;
-}
+}*/
 
-/*int fs_open(char *filename, int flags) 
+int fs_open(char *filename, int flags) 
 {
   if(!(flags == O_WRONLY || flags == O_RDONLY || flags == O_RDWR))
   {
@@ -257,6 +257,9 @@ int fs_open(char *filename, int flags)
     return SYSERR;
   }
   
+  if(fsd.root_dir.numentries <= 0){
+    return SYSERR;
+  }
   int i;
   for(i=0; i<fsd.root_dir.numentries; i++)
   {
@@ -302,7 +305,7 @@ int fs_open(char *filename, int flags)
   printf("\n file not found");
   return SYSERR;
  
-}*/
+}
 
 int fs_close(int fd) 
 {
