@@ -93,7 +93,7 @@ syscall future_get(future_t* future_t, char* data)
 	mask = disable();
 	//kprintf("\ninside future_get \n");
 
-	/*if ( future_t->mode == FUTURE_EXCLUSIVE)
+	if ( future_t->mode == FUTURE_EXCLUSIVE)
 	{
 		if( future_t->state == FUTURE_WAITING)
 		{
@@ -141,8 +141,7 @@ syscall future_get(future_t* future_t, char* data)
 		//kprintf("data :  %d \n",*data);
 
 	}
-	else */
-	if ( future_t->mode = FUTURE_QUEUE)
+	else if ( future_t->mode = FUTURE_QUEUE)
 	
 	{
 		//data_queue_remove(future_t, data);
@@ -198,7 +197,7 @@ syscall future_set(future_t* future_t, char* data)
 	//kprintf("data : %d", *data);
 	//kprintf("mode %s", future_t->state);
 	//kprintf("\n inside future_set \n");
-	/*if ( future_t->mode == FUTURE_EXCLUSIVE)
+	if ( future_t->mode == FUTURE_EXCLUSIVE)
 	{
 		//kprintf("\n future_set: FUTURE_EXCLUSIVE \n");
 		if( future_t->state == FUTURE_READY)
@@ -247,10 +246,7 @@ syscall future_set(future_t* future_t, char* data)
 			future_t->state = FUTURE_READY;
 		}
 	}
-	else */
-
-	
-	if ( future_t->mode == FUTURE_QUEUE)
+	else if ( future_t->mode == FUTURE_QUEUE)
 	{
 		//Not sure when this condition arrives
 		if(future_t->state == FUTURE_READY)
