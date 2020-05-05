@@ -221,9 +221,35 @@ void fs_printfreemask(void) { // print block bitmask
   printf("\n");
 }
 
+int fs_open(char *filename, int flags)
+{
+    if (flags != O_RDONLY && flags != O_WRONLY && flags != O_RDWR){
+        printf("Mode Invalid");
+        return SYSERR;
+    }
+    int fd;
+    struct inode node;
+    int numEntries = fsd.root_dir.numentries;
+  if(numEntries <= 0){
+    return SYSERR;
+  }
+    for(fd = 0; fd < numEntries; fd++){
+        if (oft[fd].state != FSTATE_OPEN && strcmp(fsd.root_dir.entry[fd].name, filename) == 0){
+      int inode_num = fsd.root_dir.entry[fd].inode_num;
+            fs_get_inode_by_num(0, inode_num, &node);
+      oft[fd].state = FSTATE_OPEN;
+      oft[fd].fileptr = 0;
+      oft[fd].in = node;
+      oft[fd].de = &fsd.root_dir.entry[fd];
+      oft[fd].flag = flags;
+      fs_put_inode_by_num(0, inode_num, &oft[fd].in);
+      return fd;
+        }
+    }
+    return SYSERR;
+}
 
-
-int fs_open(char *filename, int flags) 
+/*int fs_open(char *filename, int flags) 
 {
   if(!(flags == O_WRONLY || flags == O_RDONLY || flags == O_RDWR))
   {
@@ -275,40 +301,8 @@ int fs_open(char *filename, int flags)
     
   printf("\n file not found");
   return SYSERR;
-    /*if(oft[j].state == FSTATE_CLOSED && index_o_file == -1){
-      index_o_file = j;
-    }
-  }
-
-
-  if (flag == 1)
-    {
-      printf("\n file already opened");
-      return SYSERR;
-    }
-
-  if(index_o_file == -1)
-  {
-    printf("\n open_file : No space in OFT. Open file limit exceeded");
-    return SYSERR;
-  }
-
-  int status;
-  struct inode in;
-  if((status = fs_get_inode_by_num(0, fsd.root_dir.entry[i].inode_num, &in)) == SYSERR){
-    printf("\n fs_open : Failed to retrieve inode from FSD");;
-    return SYSERR;
-  }*/
-
-  /* make an openfiletable entry */
-  /*oft[index_o_file].state = FSTATE_OPEN;
-  oft[index_o_file].fileptr = 0;
-  oft[index_o_file].de = &fsd.root_dir.entry[i];
-  oft[index_o_file].in = in;
-  oft[index_o_file].flag = flags;
-  fs_put_inode_by_num(0, inode_num, &oft[fd].in);
-  return index_o_file;*/
-}
+ 
+}*/
 
 int fs_close(int fd) 
 {
@@ -629,7 +623,7 @@ int fs_write(int fd, void *buf, int nbytes)
   return nbytes;
 }
 
-/*
+
 int fs_link(char *src_filename, char* dst_filename) 
 {
   int inode_number = 0;
@@ -724,54 +718,6 @@ int fs_unlink(char *filename)
   }
   fsd.root_dir.numentries--;
     return OK;
-}*/
-//hardlink creation
-int fs_link(char *src_filename, char *dst_filename)
-{
-    int fd;
-    struct inode node;
-    struct filetable ft;
-    for (fd = 0; fd < fsd.root_dir.numentries; fd++){       
-        if(strncmp(src_filename, fsd.root_dir.entry[fd].name, FILENAMELEN + 1) == 0){
-            ft.de = &(fsd.root_dir.entry[fsd.root_dir.numentries++]);
-            (ft.de)->inode_num = fsd.root_dir.entry[fd].inode_num;         
-            strcpy((ft.de)->name, dst_filename);
-            fs_get_inode_by_num(0, fsd.root_dir.entry[fd].inode_num, &node);
-            node.nlink = node.nlink + 1;
-            fs_put_inode_by_num(0, fsd.root_dir.entry[fd].inode_num, &node);
-            return OK;
-        }
-    }
-    return SYSERR;
-}
-
-//remove hard link pointed by given name
-int fs_unlink(char *filename)
-{
-    int fd, i;
-    struct inode node;
-    for(fd = 0; fd < fsd.root_dir.numentries; fd++){
-        if(strncmp(filename, fsd.root_dir.entry[fd].name, FILENAMELEN + 1) == 0){   
-            fs_get_inode_by_num(0, fsd.root_dir.entry[fd].inode_num, &node);
-            if (node.nlink > 1){
-                node.nlink -= 1;
-                fs_put_inode_by_num(0, fsd.root_dir.entry[fd].inode_num, &node);
-                fsd.root_dir.numentries--;
-                return OK;
-            }
-            else if(node.nlink == 1){
-                int blkLength = sizeof(node.blocks) / sizeof(node.blocks[0]);
-                for (i = 0; i < blkLength; i++){
-                    fs_clearmaskbit(i);
-                }
-                fs_put_inode_by_num(0, fsd.root_dir.entry[fd].inode_num, &node);
-                fsd.root_dir.numentries--;
-                return OK;
-            }
-        }
-    }
-
-    return SYSERR;
 }
 
 
