@@ -694,26 +694,18 @@ int fs_unlink(char *filename)
     printf("\n fs_link : Failed to retrieve inode from FSD");;
     return SYSERR;
   }
-
-  /*if ( in.nlink == 0)
-  {
   
-    while (in.size>0)
-    {
-      if(fs_clearmaskbit(in.size-1) != OK)
-      {
-        printf("\n fs_write :Error in clearing block %d",in.size-1);
-        return SYSERR;
-      }
-      in.size--;
-    }
-    printf("\nfs_unlink : file delete successfully");
-  }*/
-  
-
   if ( in.nlink > 1)
   {
     in.nlink--;
+  }
+  else if ( in.nlink == 1)
+  {
+    int block_length = sizeof(in.blocks)/sizeof(in.blocks[0]);
+    for ( int i = 0; i < block_length; i++)
+    {
+      fs_clearmaskbit(i);
+    }
   }
   if((status = fs_put_inode_by_num(0, inode_number, &in))==SYSERR){
     printf("\n fs_link : fs_put_inode_by_num() failed");

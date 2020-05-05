@@ -53,7 +53,7 @@ uint fstest(int nargs, char *args[]) {
     fd = fs_create("Test_File", O_CREAT);
     kprintf("file create success"); 
 
-    int fd1_open = fs_open("Test_File", 0);
+    /*int fd1_open = fs_open("Test_File", 0);
     printf("%d", fd1_open);
      
     rval2 = fs_close(fd);
@@ -64,7 +64,7 @@ uint fstest(int nargs, char *args[]) {
 
     int fd2_open = fs_open("Test_File", 0);
     printf("%d", fd2_open);
-     
+     */
 
     // Fill buffer with random stuff
     for(i=0; i<SIZE; i++)
@@ -164,6 +164,8 @@ uint fstest(int nargs, char *args[]) {
        goto clean_up;
    }
    printf("unlink success");
+   int fd3_open = fs_open("Dst_Test_File", 0);
+
 clean_up:
     freemem(buf1,SIZE);
     freemem(buf2,SIZE);
