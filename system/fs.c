@@ -251,7 +251,7 @@ int fs_open(char *filename, int flags)
   struct inode in_temp;
   for(j = 0; j< NUM_FD; j++)
   {
-    if(oft[j].in.id == fsd.root_dir.entry[i].inode_num)
+    if(oft[j].in.id == fsd.root_dir.entry[i].inode_num && oft[j].state != FSTATE_OPEN)
     {
       /*index_o_file = j;
       if(oft[j].state == FSTATE_CLOSED)
@@ -441,7 +441,6 @@ int fs_read(int fd, void *buf, int nbytes) {
   
   if(fd<0 || fd>NUM_FD){
     printf("\n fs_read : Invalid file descriptor.");
- 
     return SYSERR;
   }
 

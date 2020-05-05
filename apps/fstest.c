@@ -51,8 +51,21 @@ uint fstest(int nargs, char *args[]) {
 // Test 1
     // Create test file
     fd = fs_create("Test_File", O_CREAT);
-    int fd_1 = fs_create("Test_File1", O_CREAT);
-     kprintf("file create success");  
+    kprintf("file create success"); 
+
+    int fd1_open = fs_open("Test_File", 0);
+    printf("%d", fd1_open);
+     
+    rval2 = fs_close(fd);
+    if(rval2 != OK)
+    {
+        printf("\n\rReturn val for fclose : %d",rval2);
+    }
+
+    int fd2_open = fs_open("Test_File", 0);
+    printf("%d", fd2_open);
+     
+
     // Fill buffer with random stuff
     for(i=0; i<SIZE; i++)
     {
@@ -60,8 +73,11 @@ uint fstest(int nargs, char *args[]) {
         j = j+33;
         buf1[i] = (char) j;
     }
+
+
     //printf("\n\r printing buffer before write %s",buf1);
     //printf("\n\r **************************");
+    printf(" buffer before writing on block %s",buf1 );
     rval = fs_write(fd,buf1,SIZE);
     if(rval == 0 || rval != SIZE )
     {
@@ -130,9 +146,10 @@ uint fstest(int nargs, char *args[]) {
        printf("\n\r File read failed");
        goto clean_up;
    }
-       
+    
    printf("\n\rContent of file %s",buf3);
-
+   printf("\n\r%d comparing read and write", memcmp(buf1, buf3, rval));
+      printf("\n\r%d comparing read and read", memcmp(buf3, buf2, rval));
    rval2 = fs_close(fd1);
    if(rval2 != OK)
    {
