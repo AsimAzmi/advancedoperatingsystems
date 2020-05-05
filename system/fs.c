@@ -234,7 +234,7 @@ int fs_open(char *filename, int flags)
   int i;
   for(i=0; i<fsd.root_dir.numentries; i++)
   {
-    if(strcmp(fsd.root_dir.entry[i].name, filename)==0)
+    if(strcmp(fsd.root_dir.entry[i].name, filename)==0 )
     {
       break;
     }
@@ -248,11 +248,12 @@ int fs_open(char *filename, int flags)
   int j;
   int index_o_file = -1;
   int flag = 0;
+  struct inode in_temp;
   for(j = 0; j< NUM_FD; j++)
   {
     if(oft[j].in.id == fsd.root_dir.entry[i].inode_num)
     {
-      index_o_file = j;
+      /*index_o_file = j;
       if(oft[j].state == FSTATE_CLOSED)
       {
         index_o_file = j;
@@ -262,11 +263,20 @@ int fs_open(char *filename, int flags)
       {
         printf("\n fs_open: File already opened.");
         flag = 1;
-        break; //return SYSERR;
+        break;*/ //return SYSERR;
+       fs_get_inode_by_num(0, oft[j].in.id , &in_temp);
+       oft[j].state = FSTATE_OPEN;
+       oft[j].fileptr = 0;
+       oft[j].in = in_temp;
+       oft[j].de = &fsd.root_dir.entry[j];
+       oft[j].flag = flags;
+       fs_put_inode_by_num(0, oft[j].in.id , &oft[j].in);
+       return j;
       }
     }
 
-    if(oft[j].state == FSTATE_CLOSED && index_o_file == -1){
+    return SYSERR;
+    /*if(oft[j].state == FSTATE_CLOSED && index_o_file == -1){
       index_o_file = j;
     }
   }
@@ -275,7 +285,7 @@ int fs_open(char *filename, int flags)
   if (flag == 1)
     {
       printf("\n file already opened");
-      return ;
+      return SYSERR;
     }
 
   if(index_o_file == -1)
@@ -289,15 +299,16 @@ int fs_open(char *filename, int flags)
   if((status = fs_get_inode_by_num(0, fsd.root_dir.entry[i].inode_num, &in)) == SYSERR){
     printf("\n fs_open : Failed to retrieve inode from FSD");;
     return SYSERR;
-  }
+  }*/
 
   /* make an openfiletable entry */
-  oft[index_o_file].state = FSTATE_OPEN;
+  /*oft[index_o_file].state = FSTATE_OPEN;
   oft[index_o_file].fileptr = 0;
   oft[index_o_file].de = &fsd.root_dir.entry[i];
   oft[index_o_file].in = in;
   oft[index_o_file].flag = flags;
-  return index_o_file;
+  fs_put_inode_by_num(0, inode_num, &oft[fd].in);
+  return index_o_file;*/
 }
 
 int fs_close(int fd) 
@@ -388,20 +399,25 @@ int fs_create(char *filename, int mode)
     
   /* file is created */
   fsd.inodes_used++;
-  oft[fsd.inodes_used].state = FSTATE_OPEN;
+  fsd.root_dir.numentries++;
+
+  int indexoffile = fs_open(filename, O_RDWR);
+
+  /*oft[fsd.inodes_used].state = FSTATE_OPEN;
   oft[fsd.inodes_used].fileptr = 0;
   oft[fsd.inodes_used].in = in;
   oft[fsd.inodes_used].de = &fsd.root_dir.entry[fsd.root_dir.numentries];
-  oft[fsd.inodes_used].flag = O_RDWR;
+  oft[fsd.inodes_used].flag = O_RDWR;*/
   
 
   /* increment inodes_used and the numentries count */
   //fsd.inodes_used++;
-  fsd.root_dir.numentries++;
+  
   
   // Returning file table index
-  return fsd.inodes_used;
+  return indexoffile;
 }
+
 
 
 int fs_seek(int fd, int offset) 
@@ -412,10 +428,10 @@ int fs_seek(int fd, int offset)
     return SYSERR;
   }
  
-  if(oft[fd].state != FSTATE_OPEN){
+  /*if(oft[fd].state != FSTATE_OPEN){
     printf("\n fs_seek : failed: file is noteopen");
     return SYSERR;
-  }
+  }*/
 
   oft[fd].fileptr =  oft[fd].fileptr + offset;
   return oft[fd].fileptr;
@@ -447,10 +463,6 @@ int fs_read(int fd, void *buf, int nbytes) {
   printf("\n fs_read: found inode %d size %d",in_temp.id, in_temp.size);
 
 
-  /*if(oft[fd].in.size == 0){
-    printf("\n fs_read : file is empty");
-    return SYSERR;
-  }*/
   if (in_temp.size == 0)
   {
     printf("\n fs_read : empty file ");
@@ -465,6 +477,8 @@ int fs_read(int fd, void *buf, int nbytes) {
     no_of_blocks++;
   }
  
+  //int inode_block = (ft.fileptr / fsd.blocksz);
+  //int inode_offset = (ft.fileptr % fsd.blocksz);
   //int i, j;
   //i = (oft[fd].fileptr / MDEV_BLOCK_SIZE);
   //i = 0;
@@ -487,10 +501,11 @@ int fs_read(int fd, void *buf, int nbytes) {
       printf("\n fs_read : read file failed");
       return SYSERR;
     }
-    strcpy((buf+temp), block_cache);
+    //strcpy((buf+temp), block_cache);
+    memcpy((buf+temp), block_cache, strlen(block_cache));
     printf("\n%s", block_cache);
     printf("\n**************************************");
-    temp = strlen(block_cache);
+    temp = temp  + strlen(block_cache);
     data_bytes += temp;
     oft[fd].fileptr = data_bytes;
     printf("\n data_bytes %d:" ,data_bytes);
@@ -549,7 +564,7 @@ int fs_write(int fd, void *buf, int nbytes)
   int i = 0;
   int temp_fptr = oft[fd].fileptr;
   
-  for ( int j = 3; j < 512; j++)
+  for ( int j = 20; j < 512; j++)
   {
     if (fs_getmaskbit(j) ==0)
     {

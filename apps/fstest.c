@@ -106,11 +106,18 @@ uint fstest(int nargs, char *args[]) {
    }
    printf("\n linked successfull ");
    int fd1 = fs_open("Dst_Test_File", 0);
-   int fd2 = fs_open("Dst_Test_File", 0);
+   /*if (fd1 == -1)
+   {
+    printf("\n Open failed");
+    goto clean_up;
+   }*/
+
+   /*int fd2 = fs_open("Dst_Test_File", 0);
+   printf("\n %d", fd2);
    if ( fd2 == SYSERR)
    {
     return SYSERR;
-   }
+   }*/
 
 
    printf("\n open successfull");
