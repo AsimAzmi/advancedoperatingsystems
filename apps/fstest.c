@@ -156,16 +156,31 @@ uint fstest(int nargs, char *args[]) {
        printf("\n\rReturn val for fclose : %d",rval);
    }
 
+   printf("\n***********************************\n" );
 // Test 3
-   rval2 = fs_unlink("Test_File");
+   rval2 = fs_unlink("Dst_Test_File");
    if(rval2 != OK)
    {
        printf("\n\r File unlink failed");
        goto clean_up;
    }
    printf("unlink success");
+    printf("\n***********************************\n" );
    int fd3_open = fs_open("Dst_Test_File", 0);
-   printf("%d", fd3_open );
+   printf("Dst_Test_File %d", fd3_open );
+   printf("\n***********************************\n" );
+   fd3_open = fs_open("Test_File", 0);
+   printf("%d test file", fd3_open );
+ printf("\n***********************************\n" );
+   rval2 = fs_unlink("Test_File");
+   if(rval2 != OK)
+   {
+       printf("\n\r File unlink failed");
+       goto clean_up;
+   }
+ printf("\n***********************************\n" );
+   fd3_open = fs_open("Test_File", 0);
+   printf("test file after unlink2%d", fd3_open );
 
 clean_up:
     freemem(buf1,SIZE);

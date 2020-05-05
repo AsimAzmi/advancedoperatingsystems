@@ -629,6 +629,7 @@ int fs_write(int fd, void *buf, int nbytes)
   return nbytes;
 }
 
+
 int fs_link(char *src_filename, char* dst_filename) 
 {
   int inode_number = 0;
@@ -638,7 +639,7 @@ int fs_link(char *src_filename, char* dst_filename)
     if(strcmp(fsd.root_dir.entry[i].name, src_filename)==0)
     {
       printf("\n fs_link : File to be linked found");
-      inode_number = i;
+      inode_number = fsd.root_dir.entry[i].inode_num;
       break;
     }
   }
@@ -648,8 +649,13 @@ int fs_link(char *src_filename, char* dst_filename)
      printf("\n fs_link : File not present");
      return SYSERR;    
   }
+  fsd.root_dir.entry[fsd.root_dir.numentries].inode_num = inode_number;
+  strcpy(fsd.root_dir.entry[fsd.root_dir.numentries].name, dst_filename);
+  fsd.root_dir.numentries++;
+
   struct inode in;
   int status;
+
   if((status = fs_get_inode_by_num(0, inode_number, &in)) == SYSERR){
     printf("\n fs_link : Failed to retrieve inode from FSD");;
     return SYSERR;
@@ -662,9 +668,7 @@ int fs_link(char *src_filename, char* dst_filename)
     return SYSERR;
   }
 
-  fsd.root_dir.entry[fsd.root_dir.numentries].inode_num = inode_number;
-  strcpy(fsd.root_dir.entry[fsd.root_dir.numentries].name, dst_filename);
-  fsd.root_dir.numentries++;
+  
   return OK;
 }
 
@@ -674,27 +678,28 @@ int fs_unlink(char *filename)
   int i =0;
   for( i=0; i<fsd.root_dir.numentries; i++)
   {
-    if(strcmp(fsd.root_dir.entry[i].name, filename)==0)
+    if(strncmp(fsd.root_dir.entry[i].name, filename, FILENAMELEN + 1)==0)
     {
-      printf("\n fs_create : File to be unlinked found");
-      inode_number = i;
+      printf("\n fs_unlink : File to be unlinked found");
+      inode_number = fsd.root_dir.entry[i].inode_num;
       break;
     }
   }
 
   if (i >= fsd.root_dir.numentries) 
   {
-     printf("File not present");
+     printf("\n File not present");
      return SYSERR;    
   }
 
   struct inode in;
   int status;
   if((status = fs_get_inode_by_num(0, inode_number, &in)) == SYSERR){
-    printf("\n fs_link : Failed to retrieve inode from FSD");;
+    printf("\n fs_unlink : Failed to retrieve inode from FSD");;
     return SYSERR;
   }
-  
+   printf("\n fs_unlink:  number of links %d", in.nlink);
+
   if ( in.nlink > 1)
   {
     in.nlink--;
@@ -706,12 +711,12 @@ int fs_unlink(char *filename)
     {
       if (fs_clearmaskbit(in.size - 1) != OK)
       {
-        printf("unlink: cant clear block\n");
+        printf("\n unlink: cant clear block\n");
         return SYSERR;
       }
       in.size--;
     }
-    printf("\n deleting the file");
+    printf("\n fs_link : deleting the file");
   }
   if((status = fs_put_inode_by_num(0, inode_number, &in))==SYSERR){
     printf("\n fs_link : fs_put_inode_by_num() failed");
@@ -720,5 +725,8 @@ int fs_unlink(char *filename)
   fsd.root_dir.numentries--;
     return OK;
 }
+
+
+
 #endif /* FS */
   
