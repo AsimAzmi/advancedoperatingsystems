@@ -9,6 +9,8 @@
 //#include <future.h>
 #include <tscdf_a5.h>
 #include<fs.h>
+#include<rbt.h>
+#define NQTABENTRY 1000
 
 
 /* xsh_run - take argument to map to a function and run */
@@ -24,11 +26,44 @@ int one;
 int two;
 int zero;
 future_t **fibfut;
+//struct rbNode *root;
 
 //futureq_test1 (int nargs, char *args[]);
 //futureq_test2 (int nargs, char *args[]);
 //futureq_test3 (int nargs, char *args[]);
 
+void rbt_func(int nargs, char *args[])
+{
+ int ch, data;
+ 
+
+    root = createNode(10);
+    printf("\n node created");
+    struct rbNode *temp = root;
+
+
+
+    temp = insertion(15); 
+    temp = insertion( 20); 
+    temp = insertion( 30); 
+    temp = insertion( 11);
+    printf("\n"); 
+    inorderTraversal(root);
+    printf("\n"); 
+    deletion(30);
+    deletion(20);
+
+    printf("\n");
+    inorderTraversal(root);
+    search_node(root, 20);
+    search_node(root, 11);
+    search_node(root, 30);
+    search_node(root, 11);
+
+    struct rbNode queuetable[NQTABENTRY];
+  
+  return 0; 
+}
 
 void prodcons_bb(int nargs, char *args[]) {
   
@@ -264,10 +299,12 @@ void fstest_dummy(int nargs, char *args[])
 
 shellcmd xsh_run(int nargs, char *args[])
 {
+
     if ((nargs == 1) || (strncmp(args[1], "list", 5) == 0))
     {
       printf("prodcons_bb\n");
       printf("future_test\n");
+      printf("rbt\n");
       printf("tscdf\n");
       return OK;
     }
@@ -279,9 +316,12 @@ shellcmd xsh_run(int nargs, char *args[])
     args++;
     nargs--;
 
-    
-
-    if(strncmp(args[0], "prodcons_bb", 11) == 0)
+    if(strncmp(args[0], "rbt", 3) == 0)
+    {
+      resume ( create((void *)rbt_func, 4096, 10, "prodcons_bb",2, nargs, args));
+      return OK;
+    }
+    else if(strncmp(args[0], "prodcons_bb", 11) == 0)
     {
       resume ( create((void *)prodcons_bb, 4096, 10, "prodcons_bb",2, nargs, args));
       printf("\n exiting main command \n");

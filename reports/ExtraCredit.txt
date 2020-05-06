@@ -1,0 +1,60 @@
+							
+							Assignemnt7 Report
+Files :
+/apps/newtree.c
+/apps/tr_delete.c
+/apps/tr_search.c
+/apps/tr_insert.c
+/include/rbt.h
+/shell/xsh_run.c - (rbt_func)
+
+
+Implementation:
+
+In this assignment I have implemented a redblack tree. The implementation has four basic operations Insertion, Deletion, Search, Create.
+
+Create : Creates a new tree and  returns the root node.
+Search : Performs a search using Inorder Traversal. If the data is found it prints "data found" else just returns.
+Insertion : Inserts a new node in the tree while maintaining the properties of the RedBlack Tree. 
+Deletion: Deletes a node in the tree while maintaining the properties of the RedBlack Tree.
+
+All the functions are declared in header file "rbt.h"
+struct rbNode* createNode(int data) : Takes the data to be inserted and creates a root node.
+
+struct rbNode* insertion( int data) : Inserts the data inside the tree.
+
+void deletion (int data) : Deletes the data.
+
+void search_node(struct rbNode *node, int data) : Takes root node  and data as the parameter and traverses the tree to find the data.
+
+
+Structures :
+
+I have used a struct rbNode which contains a data, color and an array of pointer of type rbNode. The size of the array is 2. 0 index indicates left and 1 indicates right.
+
+I have also created a enum for colors.
+
+Test Cases :
+
+I have performed basic insertion, deletion and search opertions to check the implementaion. I have also printed the output of inorder traversal to check if the tree is maintaining the basic property.
+
+    temp = insertion(15); 
+    temp = insertion( 20); 
+    temp = insertion( 30); 
+    temp = insertion( 11); 
+    
+    deletion(30);
+    deletion(20);
+
+    search_node(root, 20);
+    search_node(root, 11);
+
+
+ Pending Task:
+
+ For now I have just initialized the queuetab array of type rbNode. I have not implemented the fucntionality where this will be used for processes and each
+ index in the array will represent the process id.
+
+
+
+
