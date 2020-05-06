@@ -57,5 +57,10 @@ I have performed basic insertion, deletion and search opertions to check the imp
  index in the array will represent the process id.
 
 
+References : 
+https://en.wikipedia.org/wiki/Red%E2%80%93black_tree
+https://www.zentut.com/c-tutorial/c-red-black-tree/
+https://www.programiz.com/dsa/red-black-tree
+
 
 
